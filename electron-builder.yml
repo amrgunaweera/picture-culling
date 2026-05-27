@@ -1,0 +1,16 @@
+appId: com.picturecull.app
+productName: PictureCull
+directories:
+  buildResources: resources
+  output: dist
+win:
+  target:
+    - nsis
+  icon: resources/icon.ico
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  deleteAppDataOnUninstall: false
+asarUnpack:
+  - "**/node_modules/sql.js/**/*"
+  - "**/node_modules/sharp/**/*"
