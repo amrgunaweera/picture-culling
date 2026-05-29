@@ -13,7 +13,7 @@ function getScoreClass(score: number | null): string {
 
 function formatScore(score: number | null): string {
   if (score === null) return '—'
-  return Math.round(score * 100).toString()
+  return Math.round(score * 100) + '%'
 }
 
 interface PhotoCardProps {
@@ -27,7 +27,7 @@ export const PhotoCard = memo(function PhotoCard({ photo, index }: PhotoCardProp
 
   const isSelected = selectedIds.has(photo.id)
   const thumbnailUrl = photo.thumbnailPath
-    ? `local-file://${photo.thumbnailPath.replace(/\\/g, '/')}`
+    ? 'local-file:///' + photo.thumbnailPath.replace(/\\/g, '/').split('/').map(encodeURIComponent).join('/')
     : ''
 
   const handleClick = useCallback((e: React.MouseEvent) => {
@@ -69,17 +69,17 @@ export const PhotoCard = memo(function PhotoCard({ photo, index }: PhotoCardProp
         </div>
       )}
 
+      {/* AI Score Badge */}
+      {photo.compositeScore !== null && (
+        <div className={`ai-score-badge ${getScoreClass(photo.compositeScore)}`}>
+          {formatScore(photo.compositeScore)}
+        </div>
+      )}
+
       <div className="photo-card-overlay">
         <div className="photo-card-top">
-          {/* AI Score Badge */}
-          {photo.compositeScore !== null && (
-            <div className={`ai-score-badge ${getScoreClass(photo.compositeScore)}`}>
-              {formatScore(photo.compositeScore)}
-            </div>
-          )}
-
           {/* Flag Badge */}
-          <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: '4px', alignItems: 'center', marginLeft: 'auto' }}>
             {photo.flag === 'pick' && <div className="flag-badge pick">✓</div>}
             {photo.flag === 'reject' && <div className="flag-badge reject">✕</div>}
             {photo.duplicateGroupId && <div className="duplicate-badge">DUP</div>}

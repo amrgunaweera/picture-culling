@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS sessions (
 
 CREATE TABLE IF NOT EXISTS photos (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  file_path TEXT UNIQUE NOT NULL,
+  file_path TEXT NOT NULL,
   file_name TEXT NOT NULL,
   file_size INTEGER,
   file_hash TEXT,
@@ -47,6 +47,7 @@ CREATE TABLE IF NOT EXISTS photos (
   duplicate_group_id INTEGER,
   session_id INTEGER NOT NULL,
   created_at TEXT DEFAULT (datetime('now')),
+  UNIQUE(file_path, session_id),
   FOREIGN KEY (session_id) REFERENCES sessions(id)
 );
 
@@ -127,6 +128,11 @@ export function deleteSession(sessionId: number): void {
   saveDb()
 }
 
+export function clearSessionPhotos(sessionId: number): void {
+  db.run('DELETE FROM photos WHERE session_id = ?', [sessionId])
+  saveDb()
+}
+
 // --- Photo operations ---
 
 export function insertPhoto(photo: {
@@ -148,7 +154,7 @@ export function insertPhoto(photo: {
   takenAt?: string | null
 }): number {
   db.run(`
-    INSERT OR IGNORE INTO photos (
+    INSERT OR REPLACE INTO photos (
       file_path, file_name, file_size, modified_at, width, height, thumbnail_path, session_id,
       camera_make, camera_model, lens, iso, shutter_speed, aperture, focal_length, taken_at
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -187,6 +193,11 @@ export function updatePhotoScores(id: number, scores: {
 
   values.push(id)
   db.run(`UPDATE photos SET ${sets.join(', ')} WHERE id = ?`, values)
+  saveDb()
+}
+
+export function updatePhotoThumbnail(id: number, thumbnailPath: string, width: number, height: number): void {
+  db.run('UPDATE photos SET thumbnail_path = ?, width = ?, height = ? WHERE id = ?', [thumbnailPath, width, height, id])
   saveDb()
 }
 
@@ -316,6 +327,13 @@ export function getPhotosByFlag(sessionId: number, flag: Flag): Photo[] {
 }
 
 // --- Mappers ---
+
+export function deletePhotos(ids: number[]) {
+  if (ids.length === 0) return
+  const placeholders = ids.map(() => '?').join(',')
+  db.run(`DELETE FROM photos WHERE id IN (${placeholders})`, ids)
+  saveDb()
+}
 
 function mapPhotoRow(columns: string[], row: any[]): Photo {
   const obj: any = {}

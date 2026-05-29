@@ -38,6 +38,9 @@ export const useSessionStore = create<SessionState>((set, get) => ({
 
     set({ isScanning: false, scanProgress: null, currentSession: session })
     await get().loadSessions()
+    // Always reload photos after scanning — the session ID may be unchanged
+    // (re-opened folder), so the useEffect in App.tsx won't fire automatically.
+    await usePhotoStore.getState().loadPhotos()
   },
 
   deleteSession: async (id) => {
@@ -61,6 +64,7 @@ interface PhotoState {
   isLoading: boolean
   loadPhotos: () => Promise<void>
   selectPhoto: (id: number, multi?: boolean) => void
+  setSelectedPhotos: (ids: number[]) => void
   selectAll: () => void
   clearSelection: () => void
   setCurrentIndex: (index: number) => void
@@ -68,6 +72,7 @@ interface PhotoState {
   setFlag: (id: number, flag: Flag) => Promise<void>
   setColorLabel: (id: number, color: ColorLabel) => Promise<void>
   updatePhotoInList: (id: number, updates: Partial<Photo>) => void
+  deleteRejectedPhotos: () => Promise<number>
 }
 
 export const usePhotoStore = create<PhotoState>((set, get) => ({
@@ -105,6 +110,10 @@ export const usePhotoStore = create<PhotoState>((set, get) => ({
     }))
   },
 
+  setSelectedPhotos: (ids) => {
+    set({ selectedIds: new Set(ids) })
+  },
+
   clearSelection: () => set({ selectedIds: new Set() }),
 
   setCurrentIndex: (index) => set({ currentIndex: index }),
@@ -128,6 +137,17 @@ export const usePhotoStore = create<PhotoState>((set, get) => ({
     set(state => ({
       photos: state.photos.map(p => p.id === id ? { ...p, ...updates } : p)
     }))
+  },
+
+  deleteRejectedPhotos: async () => {
+    const session = useSessionStore.getState().currentSession
+    if (!session) return 0
+    const deletedCount = await window.api.deleteRejected(session.id)
+    if (deletedCount > 0) {
+      await get().loadPhotos()
+      useSessionStore.getState().loadSessions()
+    }
+    return deletedCount
   }
 }))
 
@@ -152,9 +172,13 @@ export const useFilterStore = create<FilterState>((set, get) => ({
     set(state => ({
       filters: { ...state.filters, [key]: value }
     }))
+    usePhotoStore.getState().loadPhotos()
   },
 
-  clearFilters: () => set({ filters: { ...defaultFilters } }),
+  clearFilters: () => {
+    set({ filters: { ...defaultFilters } })
+    usePhotoStore.getState().loadPhotos()
+  },
 
   toggleFlag: (flag) => {
     set(state => {
@@ -164,6 +188,7 @@ export const useFilterStore = create<FilterState>((set, get) => ({
         : [...current, flag]
       return { filters: { ...state.filters, flags: updated.length > 0 ? updated : undefined } }
     })
+    usePhotoStore.getState().loadPhotos()
   },
 
   toggleColorLabel: (label) => {
@@ -174,6 +199,7 @@ export const useFilterStore = create<FilterState>((set, get) => ({
         : [...current, label]
       return { filters: { ...state.filters, colorLabels: updated.length > 0 ? updated : undefined } }
     })
+    usePhotoStore.getState().loadPhotos()
   }
 }))
 

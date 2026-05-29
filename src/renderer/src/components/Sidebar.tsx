@@ -26,7 +26,7 @@ function ScoreBar({ label, score }: { label: string; score: number | null }) {
         />
       </div>
       <span className="score-bar-value" style={{ color: getScoreColor(score) }}>
-        {score !== null ? pct : '—'}
+        {score !== null ? pct + '%' : '—'}
       </span>
     </div>
   )
@@ -63,7 +63,7 @@ export function Sidebar() {
       }}>
         {photo.thumbnailPath && (
           <img
-            src={`local-file://${photo.thumbnailPath.replace(/\\/g, '/')}`}
+            src={'local-file:///' + photo.thumbnailPath.replace(/\\/g, '/').split('/').map(encodeURIComponent).join('/')}
             alt={photo.fileName}
             style={{
               width: '100%',

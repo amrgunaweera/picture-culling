@@ -4,6 +4,8 @@ import { ImportView } from './components/ImportView'
 import { Toolbar } from './components/Toolbar'
 import { PhotoGrid } from './components/PhotoGrid'
 import { PhotoViewer } from './components/PhotoViewer'
+import { CompareView } from './components/CompareView'
+import { DuplicateView } from './components/DuplicateView'
 import { Sidebar } from './components/Sidebar'
 import { StatusBar } from './components/StatusBar'
 import { FilterBar } from './components/FilterBar'
@@ -74,7 +76,10 @@ export function App() {
       <FilterBar />
       <div className="app-body">
         <div className="app-main">
-          {viewMode === 'grid' ? <PhotoGrid /> : <PhotoViewer />}
+          {viewMode === 'grid' && <PhotoGrid />}
+          {viewMode === 'loupe' && <PhotoViewer />}
+          {viewMode === 'compare' && <CompareView />}
+          {viewMode === 'duplicates' && <DuplicateView />}
         </div>
         {sidebarVisible && <Sidebar />}
       </div>

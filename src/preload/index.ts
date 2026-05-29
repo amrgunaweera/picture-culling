@@ -24,6 +24,7 @@ const api: ElectronAPI = {
   // Export operations
   moveRejected: (sessionId, targetDir) => ipcRenderer.invoke('move-rejected', sessionId, targetDir),
   exportPicked: (sessionId, targetDir) => ipcRenderer.invoke('export-picked', sessionId, targetDir),
+  deleteRejected: (sessionId) => ipcRenderer.invoke('delete-rejected', sessionId),
 
   // Events
   onAnalysisProgress: (callback) => {

@@ -22,7 +22,7 @@ export function PhotoViewer() {
     )
   }
 
-  const imageUrl = `local-file://${photo.filePath.replace(/\\/g, '/')}`
+  const imageUrl = 'local-file:///' + photo.filePath.replace(/\\/g, '/').split('/').map(encodeURIComponent).join('/')
 
   const goNext = useCallback(() => {
     if (currentIndex < photos.length - 1) {
@@ -178,7 +178,7 @@ export function PhotoViewer() {
           >
             {p.thumbnailPath ? (
               <img
-                src={`local-file://${p.thumbnailPath.replace(/\\/g, '/')}`}
+              src={'local-file:///' + p.thumbnailPath.replace(/\\/g, '/').split('/').map(encodeURIComponent).join('/')}
                 alt={p.fileName}
                 loading="lazy"
               />

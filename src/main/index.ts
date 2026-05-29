@@ -50,11 +50,20 @@ function createWindow(): void {
   }
 }
 
+import { pathToFileURL } from 'url'
+
 // Register custom protocol for serving local images
+// IMPORTANT: URLs must use triple-slash (local-file:///C:/...) so Chromium
+// does not interpret the Windows drive letter as a URL hostname.
 function registerLocalFileProtocol(): void {
   protocol.handle('local-file', (request) => {
-    const filePath = decodeURIComponent(request.url.replace('local-file://', ''))
-    return net.fetch(`file://${filePath}`)
+    // Strip the protocol prefix (local-file:///) leaving an encoded absolute path
+    // e.g. local-file:///C:/Users/foo/bar%20baz.jpg -> C:/Users/foo/bar%20baz.jpg
+    let filePath = request.url.slice('local-file:///'.length)
+    // Decode percent-encoding so pathToFileURL gets a real filesystem path
+    filePath = decodeURIComponent(filePath)
+    // pathToFileURL correctly re-encodes special chars for net.fetch
+    return net.fetch(pathToFileURL(filePath).toString())
   })
 }
 

@@ -1,4 +1,4 @@
-import { ipcMain, dialog, BrowserWindow } from 'electron'
+import { ipcMain, dialog, BrowserWindow, shell } from 'electron'
 import path from 'path'
 import fs from 'fs'
 import * as database from './database'
@@ -22,7 +22,14 @@ export function registerIpcHandlers(): void {
 
   ipcMain.handle('scan-folder', async (event, folderPath: string) => {
     const folderName = path.basename(folderPath)
-    const session = database.createSession(folderPath, folderName)
+    
+    let session = database.getSessions().find(s => s.folderPath === folderPath)
+    if (!session) {
+      session = database.createSession(folderPath, folderName)
+    } else {
+      // Clear existing photos so a rescan always starts fresh
+      database.clearSessionPhotos(session.id)
+    }
     const win = BrowserWindow.fromWebContents(event.sender)
 
     // Scan for files
@@ -37,31 +44,47 @@ export function registerIpcHandlers(): void {
 
     const total = files.length
 
-    // Process each file: thumbnail + EXIF
+    // Process each file: insert first, then generate thumbnail + EXIF
     for (let i = 0; i < files.length; i++) {
       const file = files[i]
 
+      // Always extract EXIF (best-effort)
+      let exif = {}
       try {
-        // Generate thumbnail
-        const thumbResult = await fileManager.generateThumbnail(file.filePath, session.id)
+        exif = await fileManager.extractExif(file.filePath)
+      } catch {
+        // Non-fatal: proceed without EXIF
+      }
 
-        // Extract EXIF
-        const exif = await fileManager.extractExif(file.filePath)
-
-        // Insert into database
-        database.insertPhoto({
+      // Insert the photo record immediately so it always appears in the grid,
+      // even if thumbnail generation fails later.
+      let photoId: number | null = null
+      try {
+        photoId = database.insertPhoto({
           filePath: file.filePath,
           fileName: file.fileName,
           fileSize: file.fileSize,
           modifiedAt: file.modifiedAt,
-          width: thumbResult.width,
-          height: thumbResult.height,
-          thumbnailPath: thumbResult.thumbnailPath,
+          width: 0,
+          height: 0,
+          thumbnailPath: null,
           sessionId: session.id,
           ...exif
         })
       } catch (err) {
-        console.error(`Failed to process ${file.filePath}:`, err)
+        console.error(`Failed to insert ${file.filePath}:`, err)
+      }
+
+      // Attempt thumbnail generation separately — failure won't block the photo
+      if (photoId) {
+        try {
+          const thumbResult = await fileManager.generateThumbnail(file.filePath, session.id)
+          if (thumbResult.thumbnailPath) {
+            database.updatePhotoThumbnail(photoId, thumbResult.thumbnailPath, thumbResult.width, thumbResult.height)
+          }
+        } catch (err) {
+          console.error(`Thumbnail failed for ${file.filePath}:`, err)
+        }
       }
 
       // Report progress
@@ -139,7 +162,8 @@ export function registerIpcHandlers(): void {
           blurScore: scores.blurScore,
           exposureScore: scores.exposureScore,
           compositeScore: scores.compositeScore,
-          phash: scores.phash
+          phash: scores.phash,
+          faceCount: scores.faceCount
         })
       } catch (err) {
         console.error(`Analysis failed for ${photo.filePath}:`, err)
@@ -194,6 +218,28 @@ export function registerIpcHandlers(): void {
   })
 
   // --- Export Operations ---
+
+  ipcMain.handle('delete-rejected', async (_event, sessionId: number) => {
+    const rejected = database.getPhotosByFlag(sessionId, 'reject')
+    const deletedIds: number[] = []
+
+    for (const photo of rejected) {
+      try {
+        if (fs.existsSync(photo.filePath)) {
+          await shell.trashItem(photo.filePath)
+        }
+        deletedIds.push(photo.id)
+      } catch (err) {
+        console.error(`Failed to trash ${photo.filePath}:`, err)
+      }
+    }
+
+    if (deletedIds.length > 0) {
+      database.deletePhotos(deletedIds)
+    }
+
+    return deletedIds.length
+  })
 
   ipcMain.handle('move-rejected', async (_event, sessionId: number, targetDir: string) => {
     const rejected = database.getPhotosByFlag(sessionId, 'reject')

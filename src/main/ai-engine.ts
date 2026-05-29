@@ -11,6 +11,8 @@
  */
 
 import sharp from 'sharp'
+import * as tf from '@tensorflow/tfjs'
+import * as blazeface from '@tensorflow-models/blazeface'
 
 // ============================================================================
 // BLUR DETECTION — Laplacian Variance
@@ -242,28 +244,84 @@ export function calculateCompositeScore(scores: {
   return Math.min(1, Math.max(0, composite))
 }
 
+// Track whether face detection is available (TF.js requires tfjs-node in main process)
+let faceModel: blazeface.BlazeFaceModel | null = null
+let faceDetectionUnavailable = false
+
+export async function detectFaces(filePath: string): Promise<number> {
+  if (faceDetectionUnavailable) return 0
+
+  if (!faceModel) {
+    try {
+      await tf.ready()
+      faceModel = await blazeface.load()
+    } catch (e) {
+      console.warn('BlazeFace unavailable (TF.js requires tfjs-node in main process):', (e as Error).message)
+      faceDetectionUnavailable = true
+      return 0
+    }
+  }
+
+  try {
+    const { data, info } = await sharp(filePath, { failOn: 'none' })
+      .resize(800, 800, { fit: 'inside' })
+      .removeAlpha()
+      .raw()
+      .toBuffer({ resolveWithObject: true })
+
+    const numChannels = 3
+    const numPixels = info.width * info.height
+    const values = new Int32Array(numPixels * numChannels)
+
+    for (let i = 0; i < numPixels * numChannels; i++) {
+      values[i] = data[i]
+    }
+
+    const tensor = tf.tensor3d(values, [info.height, info.width, numChannels], 'int32')
+    const faces = await faceModel.estimateFaces(tensor, false)
+    tensor.dispose()
+
+    return faces.length
+  } catch (e) {
+    console.error('Failed to detect faces:', e)
+    return 0
+  }
+}
+
 /**
  * Analyze a single photo through all stages.
- * Returns all computed scores.
+ * Face detection runs separately so its failure never blocks
+ * blur/exposure/phash from completing successfully.
  */
 export async function analyzePhoto(filePath: string): Promise<{
   blurScore: number
   exposureScore: number
   phash: string
+  faceCount: number
   compositeScore: number
 }> {
+  // Run core metrics together — these only depend on sharp and never fail hard
   const [blurScore, exposureScore, phash] = await Promise.all([
     detectBlur(filePath),
     analyzeExposure(filePath),
     generatePerceptualHash(filePath)
   ])
 
-  const compositeScore = calculateCompositeScore({ blurScore, exposureScore })
+  // Face detection is optional — isolate it so any TF.js crash can't reject the whole call
+  let faceCount = 0
+  try {
+    faceCount = await detectFaces(filePath)
+  } catch {
+    // Non-fatal: proceed with faceCount = 0
+  }
+
+  const compositeScore = calculateCompositeScore({ blurScore, exposureScore, faceCount })
 
   return {
     blurScore,
     exposureScore,
     phash,
+    faceCount,
     compositeScore
   }
 }

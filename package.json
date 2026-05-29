@@ -19,6 +19,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@tensorflow-models/blazeface": "^0.1.0",
+    "@tensorflow/tfjs": "^4.22.0",
     "electron-vite": "^5.0.0",
     "exifreader": "^4.39.1",
     "react": "^19.2.6",

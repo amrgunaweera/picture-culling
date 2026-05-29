@@ -2,10 +2,16 @@ import { useSessionStore, usePhotoStore, useAnalysisStore, useUIStore, useFilter
 
 export function Toolbar() {
   const { currentSession, openFolder, setCurrentSession } = useSessionStore()
-  const { photos, selectedIds, selectAll, clearSelection } = usePhotoStore()
+  const { photos, selectedIds, selectAll, clearSelection, deleteRejectedPhotos } = usePhotoStore()
   const { startAnalysis, isAnalyzing } = useAnalysisStore()
   const { viewMode, setViewMode, thumbnailSize, setThumbnailSize, toggleSidebar, sidebarVisible, autoAdvance, toggleAutoAdvance } = useUIStore()
   const { filters, setFilter } = useFilterStore()
+
+  const handleDeleteRejected = async () => {
+    if (window.confirm('Are you sure you want to move all rejected photos to the Recycle Bin?')) {
+      await deleteRejectedPhotos()
+    }
+  }
 
   return (
     <div className="toolbar">
@@ -40,6 +46,20 @@ export function Toolbar() {
           title="Loupe View (E)"
         >
           ◻
+        </button>
+        <button
+          className={`btn btn-icon ${viewMode === 'compare' ? 'active' : ''}`}
+          onClick={() => setViewMode('compare')}
+          title="Compare Mode (C)"
+        >
+          ◫
+        </button>
+        <button
+          className={`btn btn-icon ${viewMode === 'duplicates' ? 'active' : ''}`}
+          onClick={() => setViewMode('duplicates')}
+          title="Review Duplicates"
+        >
+          👯
         </button>
       </div>
 
@@ -109,6 +129,15 @@ export function Toolbar() {
         title="Auto-advance after flagging"
       >
         ⏩ Auto
+      </button>
+
+      {/* Delete Rejected */}
+      <button
+        className="btn btn-danger btn-sm"
+        onClick={handleDeleteRejected}
+        title="Move all rejected photos to Recycle Bin"
+      >
+        🗑️ Delete Rejected
       </button>
 
       {/* AI Analysis */}

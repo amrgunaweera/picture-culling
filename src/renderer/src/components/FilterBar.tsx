@@ -1,9 +1,8 @@
-import { useFilterStore, usePhotoStore } from '../store'
+import { useFilterStore } from '../store'
 import type { Flag, ColorLabel } from '../../../../types'
 
 export function FilterBar() {
   const { filters, toggleFlag, toggleColorLabel, setFilter, clearFilters } = useFilterStore()
-  const { loadPhotos } = usePhotoStore()
 
   const hasActiveFilters = !!(
     filters.flags?.length ||
@@ -13,29 +12,24 @@ export function FilterBar() {
     filters.minCompositeScore
   )
 
-  const handleFilterChange = () => {
-    // Reload photos whenever filters change
-    setTimeout(() => loadPhotos(), 0)
-  }
-
   return (
     <div className="filter-bar">
       {/* Flag filters */}
       <button
         className={`filter-chip ${filters.flags?.includes('pick') ? 'active' : ''}`}
-        onClick={() => { toggleFlag('pick'); handleFilterChange() }}
+        onClick={() => toggleFlag('pick')}
       >
         ✓ Picks
       </button>
       <button
         className={`filter-chip ${filters.flags?.includes('reject') ? 'active' : ''}`}
-        onClick={() => { toggleFlag('reject'); handleFilterChange() }}
+        onClick={() => toggleFlag('reject')}
       >
         ✕ Rejects
       </button>
       <button
         className={`filter-chip ${filters.flags?.includes('none') ? 'active' : ''}`}
-        onClick={() => { toggleFlag('none'); handleFilterChange() }}
+        onClick={() => toggleFlag('none')}
       >
         ○ Unflagged
       </button>
@@ -49,7 +43,6 @@ export function FilterBar() {
         onChange={(e) => {
           const v = Number(e.target.value)
           setFilter('minRating', v > 0 ? v : undefined)
-          handleFilterChange()
         }}
       >
         <option value={0}>All Ratings</option>
@@ -65,7 +58,7 @@ export function FilterBar() {
         <button
           key={color}
           className={`filter-chip ${filters.colorLabels?.includes(color) ? 'active' : ''}`}
-          onClick={() => { toggleColorLabel(color); handleFilterChange() }}
+          onClick={() => toggleColorLabel(color)}
           style={{ padding: '4px 8px' }}
         >
           <span className={`color-dot ${color}`} />
@@ -77,10 +70,7 @@ export function FilterBar() {
       {/* Duplicates only */}
       <button
         className={`filter-chip ${filters.duplicatesOnly ? 'active' : ''}`}
-        onClick={() => {
-          setFilter('duplicatesOnly', !filters.duplicatesOnly)
-          handleFilterChange()
-        }}
+        onClick={() => setFilter('duplicatesOnly', !filters.duplicatesOnly)}
       >
         🔄 Duplicates
       </button>
@@ -91,7 +81,7 @@ export function FilterBar() {
       {hasActiveFilters && (
         <button
           className="filter-chip"
-          onClick={() => { clearFilters(); handleFilterChange() }}
+          onClick={clearFilters}
         >
           ✕ Clear All
         </button>

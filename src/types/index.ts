@@ -120,6 +120,7 @@ export interface ElectronAPI {
   // File export operations
   moveRejected(sessionId: number, targetDir: string): Promise<number>
   exportPicked(sessionId: number, targetDir: string): Promise<number>
+  deleteRejected(sessionId: number): Promise<number>
 
   // Events
   onAnalysisProgress(callback: (progress: AnalysisProgress) => void): () => void

@@ -46,6 +46,11 @@ export function useKeyboardShortcuts() {
           if (viewMode === 'grid') setViewMode('loupe')
           break
 
+        case 'c':
+          e.preventDefault()
+          setViewMode(viewMode === 'compare' ? 'grid' : 'compare')
+          break
+
         case 'escape':
           e.preventDefault()
           if (viewMode !== 'grid') {
