@@ -1,5 +1,6 @@
 import { usePhotoStore, useUIStore } from '../store'
-import type { ColorLabel } from '../../../../types'
+import type { ColorLabel } from '../../../types'
+import { IconStar, IconCheck, IconX } from '@tabler/icons-react'
 
 function getScoreColor(score: number | null): string {
   if (score === null) return 'var(--text-disabled)'
@@ -33,10 +34,11 @@ function ScoreBar({ label, score }: { label: string; score: number | null }) {
 }
 
 export function Sidebar() {
-  const { photos, currentIndex, selectedIds, setRating, setFlag, setColorLabel } = usePhotoStore()
+  const { photos, currentIndex, selectedIds, setRating, setFlag, setColorLabel, setCurrentIndex } = usePhotoStore()
+  const { viewMode, autoAdvance } = useUIStore()
 
   // Show info for the current photo in loupe mode, or the first selected in grid mode
-  const selectedId = selectedIds.size > 0 ? Array.from(selectedIds)[0] : null
+  const selectedId = (selectedIds.size > 0 && viewMode !== 'loupe') ? Array.from(selectedIds)[0] : null
   const photo = selectedId
     ? photos.find(p => p.id === selectedId)
     : photos[currentIndex]
@@ -101,9 +103,9 @@ export function Sidebar() {
               key={s}
               className={`star ${s <= photo.rating ? 'filled' : ''}`}
               onClick={() => setRating(photo.id, s === photo.rating ? 0 : s)}
-              style={{ cursor: 'pointer' }}
+              style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center' }}
             >
-              ★
+              <IconStar size={16} fill={s <= photo.rating ? 'currentColor' : 'none'} />
             </span>
           ))}
         </div>
@@ -112,15 +114,25 @@ export function Sidebar() {
         <div style={{ display: 'flex', gap: 'var(--space-2)', marginBottom: 'var(--space-3)' }}>
           <button
             className={`btn btn-sm ${photo.flag === 'pick' ? 'btn-success' : ''}`}
-            onClick={() => setFlag(photo.id, photo.flag === 'pick' ? 'none' : 'pick')}
+            onClick={() => {
+              setFlag(photo.id, photo.flag === 'pick' ? 'none' : 'pick')
+              if (autoAdvance && viewMode === 'loupe' && currentIndex < photos.length - 1) {
+                setCurrentIndex(currentIndex + 1)
+              }
+            }}
           >
-            ✓ Pick
+            <IconCheck size={14} /> Pick
           </button>
           <button
             className={`btn btn-sm ${photo.flag === 'reject' ? 'btn-danger' : ''}`}
-            onClick={() => setFlag(photo.id, photo.flag === 'reject' ? 'none' : 'reject')}
+            onClick={() => {
+              setFlag(photo.id, photo.flag === 'reject' ? 'none' : 'reject')
+              if (autoAdvance && viewMode === 'loupe' && currentIndex < photos.length - 1) {
+                setCurrentIndex(currentIndex + 1)
+              }
+            }}
           >
-            ✕ Reject
+            <IconX size={14} /> Reject
           </button>
           {photo.flag !== 'none' && (
             <button
@@ -141,7 +153,7 @@ export function Sidebar() {
               style={{
                 width: '24px',
                 height: '24px',
-                borderRadius: 'var(--radius-full)',
+                borderRadius: 'var(--radius-md)',
                 padding: 0
               }}
               onClick={() => setColorLabel(photo.id, photo.colorLabel === color ? 'none' : color)}

@@ -1,6 +1,7 @@
 import { useCallback, memo } from 'react'
 import { usePhotoStore, useUIStore } from '../store'
-import type { Photo } from '../../../../types'
+import type { Photo } from '../../../types'
+import { IconCamera, IconCheck, IconX, IconStar } from '@tabler/icons-react'
 
 function getScoreClass(score: number | null): string {
   if (score === null) return ''
@@ -34,6 +35,11 @@ export const PhotoCard = memo(function PhotoCard({ photo, index }: PhotoCardProp
     selectPhoto(photo.id, e.ctrlKey || e.metaKey)
   }, [photo.id])
 
+  const handleCheckClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation()
+    selectPhoto(photo.id, true) // always multi-select via checkbox
+  }, [photo.id])
+
   const handleDoubleClick = useCallback(() => {
     setCurrentIndex(index)
     setViewMode('loupe')
@@ -48,6 +54,14 @@ export const PhotoCard = memo(function PhotoCard({ photo, index }: PhotoCardProp
       onClick={handleClick}
       onDoubleClick={handleDoubleClick}
     >
+      {/* Compare selection checkbox */}
+      <div
+        className="photo-card-compare-check"
+        onClick={handleCheckClick}
+        title={isSelected ? 'Remove from selection' : 'Add to selection (for Compare)'}
+      >
+        {isSelected && <IconCheck size={13} stroke={3} />}
+      </div>
       {thumbnailUrl ? (
         <img
           className="photo-card-image"
@@ -65,7 +79,7 @@ export const PhotoCard = memo(function PhotoCard({ photo, index }: PhotoCardProp
           color: 'var(--text-disabled)',
           fontSize: '32px'
         }}>
-          📷
+          <IconCamera size={32} stroke={1.5} />
         </div>
       )}
 
@@ -80,8 +94,16 @@ export const PhotoCard = memo(function PhotoCard({ photo, index }: PhotoCardProp
         <div className="photo-card-top">
           {/* Flag Badge */}
           <div style={{ display: 'flex', gap: '4px', alignItems: 'center', marginLeft: 'auto' }}>
-            {photo.flag === 'pick' && <div className="flag-badge pick">✓</div>}
-            {photo.flag === 'reject' && <div className="flag-badge reject">✕</div>}
+            {photo.flag === 'pick' && (
+              <div className="flag-badge pick">
+                <IconCheck size={12} stroke={3} />
+              </div>
+            )}
+            {photo.flag === 'reject' && (
+              <div className="flag-badge reject">
+                <IconX size={12} stroke={3} />
+              </div>
+            )}
             {photo.duplicateGroupId && <div className="duplicate-badge">DUP</div>}
           </div>
         </div>
@@ -93,7 +115,13 @@ export const PhotoCard = memo(function PhotoCard({ photo, index }: PhotoCardProp
           {photo.rating > 0 && (
             <div className="star-rating">
               {[1, 2, 3, 4, 5].map(s => (
-                <span key={s} className={`star ${s <= photo.rating ? 'filled' : ''}`}>★</span>
+                <span
+                  key={s}
+                  className={`star ${s <= photo.rating ? 'filled' : ''}`}
+                  style={{ display: 'inline-flex', alignItems: 'center' }}
+                >
+                  <IconStar size={10} fill={s <= photo.rating ? 'currentColor' : 'none'} />
+                </span>
               ))}
             </div>
           )}

@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useSessionStore } from '../store'
+import { IconFolderOpen, IconFolder, IconX } from '@tabler/icons-react'
+import logoUrl from '../assets/logo.png'
 
 export function ImportView() {
   const { sessions, openFolder, setCurrentSession, deleteSession, loadSessions } = useSessionStore()
@@ -19,8 +21,10 @@ export function ImportView() {
   return (
     <div className="import-view animate-fade-in">
       <div className="import-hero">
-        <div className="import-hero-icon">📷</div>
-        <h1>Welcome to PictureCull</h1>
+        <div className="import-hero-icon" style={{ overflow: 'hidden' }}>
+          <img src={logoUrl} alt="Cullexa" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        </div>
+        <h1>Welcome to Cullexa Picture Organizer</h1>
         <p>
           AI-powered photo culling that analyzes sharpness, exposure, duplicates, and more —
           helping you find your best shots in seconds.
@@ -34,7 +38,9 @@ export function ImportView() {
         onDragLeave={() => setDragOver(false)}
         onDrop={handleDrop}
       >
-        <div className="dropzone-icon">📁</div>
+        <div className="dropzone-icon" style={{ display: 'flex', justifyContent: 'center' }}>
+          <IconFolderOpen size={48} stroke={1.5} />
+        </div>
         <div className="dropzone-text">Click to select a folder of photos</div>
         <div className="dropzone-hint">Supports JPEG, PNG, TIFF, WebP, and RAW formats</div>
       </div>
@@ -48,7 +54,9 @@ export function ImportView() {
               className="session-card"
               onClick={() => setCurrentSession(session)}
             >
-              <div className="session-card-icon">📂</div>
+              <div className="session-card-icon" style={{ display: 'flex', alignItems: 'center' }}>
+                <IconFolder size={20} />
+              </div>
               <div className="session-card-info">
                 <div className="session-card-name">{session.name}</div>
                 <div className="session-card-meta">{session.folderPath}</div>
@@ -62,7 +70,7 @@ export function ImportView() {
                 }}
                 title="Delete session"
               >
-                ✕
+                <IconX size={16} />
               </button>
             </div>
           ))}

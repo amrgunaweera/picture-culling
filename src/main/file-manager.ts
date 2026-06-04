@@ -169,7 +169,7 @@ async function extractRawPreview(
     const tags = ExifReader.load(buffer, { expanded: true })
 
     if (tags.Thumbnail && tags.Thumbnail.image) {
-      const previewBuffer = Buffer.from(tags.Thumbnail.image)
+      const previewBuffer = Buffer.from(tags.Thumbnail.image as ArrayBuffer)
       const metadata = await sharp(previewBuffer).metadata()
 
       await sharp(previewBuffer)

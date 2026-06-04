@@ -1,4 +1,5 @@
 import { useSessionStore, useAnalysisStore } from '../store'
+import { IconFolderOpen, IconSparkles } from '@tabler/icons-react'
 
 interface ProgressOverlayProps {
   type: 'scan' | 'analysis'
@@ -15,8 +16,12 @@ export function ProgressOverlay({ type }: ProgressOverlayProps) {
   return (
     <div className="progress-overlay animate-fade-in">
       <div className="progress-card animate-scale-in">
-        <div style={{ fontSize: '48px', marginBottom: 'var(--space-4)' }}>
-          {isScan ? '📁' : '🤖'}
+        <div style={{ fontSize: '48px', marginBottom: 'var(--space-4)', display: 'flex', justifyContent: 'center' }}>
+          {isScan ? (
+            <IconFolderOpen size={48} stroke={1.5} />
+          ) : (
+            <IconSparkles size={48} stroke={1.5} />
+          )}
         </div>
 
         <h3>{isScan ? 'Scanning Photos' : 'AI Analysis'}</h3>

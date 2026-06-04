@@ -1,5 +1,5 @@
-appId: com.picturecull.app
-productName: PictureCull
+appId: com.cullexa-picture-organizer.app
+productName: Cullexa Picture Organizer
 directories:
   buildResources: resources
   output: dist
@@ -9,8 +9,10 @@ win:
   icon: resources/icon.ico
 nsis:
   oneClick: false
+  perMachine: true
   allowToChangeInstallationDirectory: true
   deleteAppDataOnUninstall: false
+  runAfterFinish: true
 asarUnpack:
   - "**/node_modules/sql.js/**/*"
   - "**/node_modules/sharp/**/*"

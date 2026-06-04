@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { usePhotoStore, useUIStore } from '../store'
+import { IconCircleCheck, IconAward, IconCheck, IconX } from '@tabler/icons-react'
 
 export function DuplicateView() {
   const { photos, setFlag, setSelectedPhotos } = usePhotoStore()
@@ -23,7 +24,9 @@ export function DuplicateView() {
     return (
       <div className="photo-viewer">
         <div className="empty-state">
-          <div className="empty-state-icon">✅</div>
+          <div className="empty-state-icon" style={{ display: 'flex', justifyContent: 'center' }}>
+            <IconCircleCheck size={48} stroke={1.5} style={{ color: 'var(--color-pick)' }} />
+          </div>
           <div className="empty-state-title">No duplicates found</div>
           <div className="empty-state-subtitle">Run AI analysis to find duplicate groups.</div>
         </div>
@@ -90,10 +93,14 @@ export function DuplicateView() {
                           fontSize: 'var(--text-xs)', 
                           fontWeight: 600,
                           textAlign: 'center',
-                          padding: '2px',
-                          borderRadius: 'var(--radius-sm)'
+                          padding: '4px 2px',
+                          borderRadius: 'var(--radius-sm)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '4px'
                         }}>
-                          ★ Best Quality
+                          <IconAward size={14} /> Best Quality
                         </div>
                       )}
                       
@@ -113,14 +120,14 @@ export function DuplicateView() {
                           style={{ flex: 1 }}
                           onClick={() => setFlag(photo.id, photo.flag === 'pick' ? 'none' : 'pick')}
                         >
-                          Pick
+                          <IconCheck size={14} /> Pick
                         </button>
                         <button
                           className={`btn btn-sm ${photo.flag === 'reject' ? 'btn-danger' : ''}`}
                           style={{ flex: 1 }}
                           onClick={() => setFlag(photo.id, photo.flag === 'reject' ? 'none' : 'reject')}
                         >
-                          Reject
+                          <IconX size={14} /> Reject
                         </button>
                       </div>
                     </div>

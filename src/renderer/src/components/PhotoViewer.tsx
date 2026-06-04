@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { usePhotoStore, useUIStore } from '../store'
+import { IconPhoto, IconChevronLeft, IconChevronRight, IconCheck, IconX, IconStar, IconCamera } from '@tabler/icons-react'
 
 export function PhotoViewer() {
   const { photos, currentIndex, setCurrentIndex, setRating, setFlag } = usePhotoStore()
@@ -8,6 +9,20 @@ export function PhotoViewer() {
   const [pan, setPan] = useState({ x: 0, y: 0 })
   const imageRef = useRef<HTMLImageElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
+  const filmstripRef = useRef<HTMLDivElement>(null)
+  const isDragging = useRef(false)
+  const hasDragged = useRef(false)
+  const startX = useRef(0)
+  const scrollLeft = useRef(0)
+
+  useEffect(() => {
+    if (filmstripRef.current) {
+      const activeEl = filmstripRef.current.querySelector('.filmstrip-item.active') as HTMLElement
+      if (activeEl) {
+        activeEl.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
+      }
+    }
+  }, [currentIndex])
 
   const photo = photos[currentIndex]
 
@@ -15,7 +30,9 @@ export function PhotoViewer() {
     return (
       <div className="photo-viewer">
         <div className="empty-state">
-          <div className="empty-state-icon">🖼</div>
+          <div className="empty-state-icon" style={{ display: 'flex', justifyContent: 'center' }}>
+            <IconPhoto size={48} stroke={1.5} />
+          </div>
           <div className="empty-state-title">No photo selected</div>
         </div>
       </div>
@@ -46,6 +63,38 @@ export function PhotoViewer() {
     setZoom(prev => Math.min(5, Math.max(0.5, prev * delta)))
   }, [])
 
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (!filmstripRef.current) return
+    isDragging.current = true
+    hasDragged.current = false
+    startX.current = e.pageX - filmstripRef.current.offsetLeft
+    scrollLeft.current = filmstripRef.current.scrollLeft
+  }
+
+  const handleMouseLeave = () => {
+    isDragging.current = false
+  }
+
+  const handleMouseUp = () => {
+    isDragging.current = false
+  }
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging.current || !filmstripRef.current) return
+    if (e.buttons !== 1) {
+      isDragging.current = false
+      return
+    }
+    e.preventDefault()
+    const x = e.pageX - filmstripRef.current.offsetLeft
+    const dist = Math.abs(x - startX.current)
+    if (dist > 5) {
+      hasDragged.current = true
+    }
+    const walk = (x - startX.current) * 2
+    filmstripRef.current.scrollLeft = scrollLeft.current - walk
+  }
+
   return (
     <div className="photo-viewer">
       <div
@@ -63,15 +112,17 @@ export function PhotoViewer() {
               top: '50%',
               transform: 'translateY(-50%)',
               zIndex: 10,
-              fontSize: '20px',
               width: '40px',
               height: '40px',
               background: 'rgba(0,0,0,0.4)',
-              backdropFilter: 'blur(8px)'
+              backdropFilter: 'blur(8px)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
             }}
             onClick={goPrev}
           >
-            ←
+            <IconChevronLeft size={24} style={{ color: 'white' }} />
           </button>
         )}
 
@@ -97,15 +148,17 @@ export function PhotoViewer() {
               top: '50%',
               transform: 'translateY(-50%)',
               zIndex: 10,
-              fontSize: '20px',
               width: '40px',
               height: '40px',
               background: 'rgba(0,0,0,0.4)',
-              backdropFilter: 'blur(8px)'
+              backdropFilter: 'blur(8px)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
             }}
             onClick={goNext}
           >
-            →
+            <IconChevronRight size={24} style={{ color: 'white' }} />
           </button>
         )}
 
@@ -140,7 +193,7 @@ export function PhotoViewer() {
                 if (autoAdvance) goNext()
               }}
             >
-              ✓ Pick
+              <IconCheck size={14} /> Pick
             </button>
             <button
               className={`btn btn-sm ${photo.flag === 'reject' ? 'btn-danger' : ''}`}
@@ -149,7 +202,7 @@ export function PhotoViewer() {
                 if (autoAdvance) goNext()
               }}
             >
-              ✕ Reject
+              <IconX size={14} /> Reject
             </button>
           </div>
 
@@ -160,8 +213,9 @@ export function PhotoViewer() {
                 key={s}
                 className={`star ${s <= photo.rating ? 'filled' : ''}`}
                 onClick={() => setRating(photo.id, s === photo.rating ? 0 : s)}
+                style={{ display: 'inline-flex', alignItems: 'center' }}
               >
-                ★
+                <IconStar size={14} fill={s <= photo.rating ? 'currentColor' : 'none'} />
               </span>
             ))}
           </div>
@@ -169,18 +223,33 @@ export function PhotoViewer() {
       </div>
 
       {/* Filmstrip */}
-      <div className="filmstrip">
+      <div 
+        className="filmstrip" 
+        ref={filmstripRef}
+        onMouseDown={handleMouseDown}
+        onMouseLeave={handleMouseLeave}
+        onMouseUp={handleMouseUp}
+        onMouseMove={handleMouseMove}
+      >
         {photos.map((p, i) => (
           <div
             key={p.id}
             className={`filmstrip-item ${i === currentIndex ? 'active' : ''}`}
-            onClick={() => { setCurrentIndex(i); setZoom(1); setPan({ x: 0, y: 0 }) }}
+            onClick={(e) => { 
+              if (hasDragged.current) {
+                e.preventDefault()
+                e.stopPropagation()
+                return
+              }
+              setCurrentIndex(i); setZoom(1); setPan({ x: 0, y: 0 }) 
+            }}
           >
             {p.thumbnailPath ? (
               <img
-              src={'local-file:///' + p.thumbnailPath.replace(/\\/g, '/').split('/').map(encodeURIComponent).join('/')}
+                src={'local-file:///' + p.thumbnailPath.replace(/\\/g, '/').split('/').map(encodeURIComponent).join('/')}
                 alt={p.fileName}
                 loading="lazy"
+                draggable={false}
               />
             ) : (
               <div style={{
@@ -188,7 +257,7 @@ export function PhotoViewer() {
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 background: 'var(--bg-elevated)', color: 'var(--text-disabled)'
               }}>
-                📷
+                <IconCamera size={20} stroke={1.5} />
               </div>
             )}
           </div>

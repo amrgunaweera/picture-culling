@@ -11,6 +11,7 @@ import { StatusBar } from './components/StatusBar'
 import { FilterBar } from './components/FilterBar'
 import { ProgressOverlay } from './components/ProgressOverlay'
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts'
+import logoUrl from './assets/logo.png'
 
 export function App() {
   const { currentSession, isScanning, loadSessions } = useSessionStore()
@@ -57,8 +58,8 @@ export function App() {
     return (
       <div className="app-layout">
         <div className="app-titlebar">
-          <div className="logo-icon" />
-          <span className="app-titlebar-title">PictureCull</span>
+          <img src={logoUrl} className="logo-icon" alt="Cullexa" />
+          <span className="app-titlebar-title">Cullexa Picture Organizer</span>
         </div>
         <ImportView />
         {isScanning && <ProgressOverlay type="scan" />}
@@ -69,8 +70,8 @@ export function App() {
   return (
     <div className="app-layout">
       <div className="app-titlebar">
-        <div className="logo-icon" />
-        <span className="app-titlebar-title">PictureCull</span>
+        <img src={logoUrl} className="logo-icon" alt="Cullexa" />
+        <span className="app-titlebar-title">Cullexa Picture Organizer</span>
       </div>
       <Toolbar />
       <FilterBar />

@@ -1,5 +1,5 @@
 /* ============================================================================
-   PictureCull — Design System
+   Cullexa Picture Organizer — Design System
    A premium dark-mode-first design for photographers
    ============================================================================ */
 
@@ -70,14 +70,22 @@
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
 
-  --text-xs: 0.6875rem;   /* 11px */
-  --text-sm: 0.75rem;     /* 12px */
-  --text-base: 0.8125rem; /* 13px */
-  --text-md: 0.875rem;    /* 14px */
-  --text-lg: 1rem;        /* 16px */
-  --text-xl: 1.25rem;     /* 20px */
-  --text-2xl: 1.5rem;     /* 24px */
-  --text-3xl: 2rem;       /* 32px */
+  --text-xs: 0.6875rem;
+  /* 11px */
+  --text-sm: 0.75rem;
+  /* 12px */
+  --text-base: 0.8125rem;
+  /* 13px */
+  --text-md: 0.875rem;
+  /* 14px */
+  --text-lg: 1rem;
+  /* 16px */
+  --text-xl: 1.25rem;
+  /* 20px */
+  --text-2xl: 1.5rem;
+  /* 24px */
+  --text-3xl: 2rem;
+  /* 32px */
 
   /* Spacing */
   --space-1: 4px;
@@ -112,13 +120,17 @@
 }
 
 /* --- Reset & Base --- */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-html, body, #root {
+html,
+body,
+#root {
   height: 100%;
   overflow: hidden;
 }
@@ -177,15 +189,13 @@ body {
   font-weight: 600;
   color: var(--text-secondary);
   letter-spacing: 0.05em;
-  text-transform: uppercase;
 }
 
 .app-titlebar .logo-icon {
   width: 18px;
   height: 18px;
   margin-right: var(--space-2);
-  background: var(--accent-gradient);
-  border-radius: var(--radius-sm);
+  object-fit: contain;
 }
 
 .app-body {
@@ -463,13 +473,11 @@ body {
   flex-direction: column;
   justify-content: space-between;
   padding: var(--space-2);
-  background: linear-gradient(
-    180deg,
-    rgba(0, 0, 0, 0.4) 0%,
-    transparent 30%,
-    transparent 60%,
-    rgba(0, 0, 0, 0.6) 100%
-  );
+  background: linear-gradient(180deg,
+      rgba(0, 0, 0, 0.4) 0%,
+      transparent 30%,
+      transparent 60%,
+      rgba(0, 0, 0, 0.6) 100%);
   opacity: 0;
   transition: opacity var(--transition-fast);
 }
@@ -526,11 +534,25 @@ body {
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
-.ai-score-badge.score-great { background: rgba(6, 182, 212, 0.7); }
-.ai-score-badge.score-good { background: rgba(34, 197, 94, 0.7); }
-.ai-score-badge.score-ok { background: rgba(234, 179, 8, 0.7); }
-.ai-score-badge.score-poor { background: rgba(249, 115, 22, 0.7); }
-.ai-score-badge.score-bad { background: rgba(239, 68, 68, 0.7); }
+.ai-score-badge.score-great {
+  background: rgba(6, 182, 212, 0.7);
+}
+
+.ai-score-badge.score-good {
+  background: rgba(34, 197, 94, 0.7);
+}
+
+.ai-score-badge.score-ok {
+  background: rgba(234, 179, 8, 0.7);
+}
+
+.ai-score-badge.score-poor {
+  background: rgba(249, 115, 22, 0.7);
+}
+
+.ai-score-badge.score-bad {
+  background: rgba(239, 68, 68, 0.7);
+}
 
 /* --- Flag Badge --- */
 .flag-badge {
@@ -674,8 +696,15 @@ body {
 }
 
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 20px var(--accent-glow); }
-  50% { box-shadow: 0 0 40px var(--accent-glow), 0 0 60px rgba(124, 92, 252, 0.1); }
+
+  0%,
+  100% {
+    box-shadow: 0 0 20px var(--accent-glow);
+  }
+
+  50% {
+    box-shadow: 0 0 40px var(--accent-glow), 0 0 60px rgba(124, 92, 252, 0.1);
+  }
 }
 
 .import-hero h1 {
@@ -915,16 +944,17 @@ body {
   display: inline-flex;
   align-items: center;
   gap: var(--space-1);
-  padding: var(--space-1) var(--space-3);
+  padding: 0 var(--space-3);
   font-size: var(--text-xs);
   font-weight: 500;
   color: var(--text-secondary);
   background: var(--bg-elevated);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-md);
   cursor: pointer;
   transition: all var(--transition-fast);
   white-space: nowrap;
+  height: 32px;
 }
 
 .filter-chip:hover {
@@ -1050,18 +1080,47 @@ body {
 
 /* --- Animations --- */
 @keyframes fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes slide-up {
-  from { opacity: 0; transform: translateY(12px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes scale-in {
-  from { opacity: 0; transform: scale(0.95); }
-  to { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .animate-fade-in {
@@ -1076,6 +1135,22 @@ body {
   animation: scale-in var(--transition-slow) forwards;
 }
 
+.animate-spin {
+  animation: spin 1.2s linear infinite;
+}
+
+/* Tabler Icon Alignment Helpers */
+.btn svg,
+.filter-chip svg,
+.statusbar-item svg,
+.session-card svg,
+.recent-sessions-title svg,
+.score-bar-label svg {
+  display: inline-block;
+  vertical-align: -0.125em;
+  flex-shrink: 0;
+}
+
 /* --- Color Label Dots --- */
 .color-dot {
   width: 8px;
@@ -1084,11 +1159,25 @@ body {
   display: inline-block;
 }
 
-.color-dot.red { background: var(--label-red); }
-.color-dot.yellow { background: var(--label-yellow); }
-.color-dot.green { background: var(--label-green); }
-.color-dot.blue { background: var(--label-blue); }
-.color-dot.purple { background: var(--label-purple); }
+.color-dot.red {
+  background: var(--label-red);
+}
+
+.color-dot.yellow {
+  background: var(--label-yellow);
+}
+
+.color-dot.green {
+  background: var(--label-green);
+}
+
+.color-dot.blue {
+  background: var(--label-blue);
+}
+
+.color-dot.purple {
+  background: var(--label-purple);
+}
 
 /* --- Duplicate Badge --- */
 .duplicate-badge {
@@ -1130,4 +1219,138 @@ body {
 
 .tooltip-wrapper:hover::after {
   opacity: 1;
+}
+
+/* --- Compare Action Bar (floating) --- */
+.compare-action-bar {
+  position: absolute;
+  bottom: var(--space-6);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-4);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-accent);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl), 0 0 0 1px var(--accent-glow), 0 0 24px var(--accent-glow);
+  z-index: 30;
+  animation: slide-up 0.22s ease-out forwards;
+  white-space: nowrap;
+  backdrop-filter: blur(16px);
+}
+
+.compare-action-bar-label {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.compare-action-bar-label strong {
+  color: var(--accent-secondary);
+  font-weight: 600;
+}
+
+/* --- Photo Card — Compare Checkbox --- */
+.photo-card-compare-check {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  width: 22px;
+  height: 22px;
+  border-radius: var(--radius-sm);
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity var(--transition-fast), border-color var(--transition-fast), background var(--transition-fast);
+  z-index: 5;
+}
+
+.photo-card:hover .photo-card-compare-check,
+.photo-card.selected .photo-card-compare-check {
+  opacity: 1;
+}
+
+.photo-card.selected .photo-card-compare-check {
+  border-color: var(--accent-primary);
+  background: var(--accent-primary);
+}
+
+/* --- CompareView — Remove button --- */
+.compare-remove-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 26px;
+  height: 26px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-default);
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity var(--transition-fast), background var(--transition-fast);
+  z-index: 10;
+  color: var(--text-secondary);
+}
+
+.compare-panel:hover .compare-remove-btn {
+  opacity: 1;
+}
+
+.compare-remove-btn:hover {
+  background: var(--color-reject-bg);
+  color: var(--color-reject);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+/* Compare grid container needs relative positioning for the bar */
+.photo-grid-container {
+  position: relative;
+}
+
+/* --- Filter Bar --- */
+.filter-bar {
+  display: flex;
+  align-items: center;
+  padding: var(--space-2) var(--space-4);
+  gap: var(--space-2);
+  background: var(--bg-tertiary);
+  border-bottom: 1px solid var(--border-subtle);
+  flex-shrink: 0;
+  overflow-x: auto;
+}
+
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.filter-chip:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.filter-chip.active {
+  background: rgba(124, 92, 252, 0.15);
+  border-color: var(--border-accent);
+  color: var(--accent-secondary);
 }

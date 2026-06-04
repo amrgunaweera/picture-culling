@@ -1,6 +1,6 @@
-# PictureCull 📸
+# Cullexa Picture Organizer 📸
 
-An AI-powered, high-performance desktop photo culling application for Windows. **PictureCull** is designed for photographers to quickly filter, analyze, and cull large volumes of images locally on their machine without any cloud APIs, ensuring absolute privacy and speed.
+An AI-powered, high-performance desktop photo culling application for Windows. **Cullexa Picture Organizer** is designed for photographers to quickly filter, analyze, and cull large volumes of images locally on their machine without any cloud APIs, ensuring absolute privacy and speed.
 
 ---
 
@@ -26,6 +26,18 @@ An AI-powered, high-performance desktop photo culling application for Windows. *
 - **Image Processing**: [sharp](https://sharp.pixelplumbing.com/) + [ExifReader](https://github.com/mattiasw/ExifReader)
 - **State Management**: [Zustand](https://github.com/pmndrs/zustand)
 - **Bundler/Packager**: [electron-builder](https://www.electron.build/)
+
+---
+
+## 💻 System Requirements
+
+| Specification | Minimum | Recommended |
+| --- | --- | --- |
+| **OS** | Windows 10 (64-bit) | Windows 11 (64-bit) |
+| **CPU** | Intel Core i3 / AMD Ryzen 3 | Intel Core i5 / AMD Ryzen 5 or higher |
+| **RAM** | 4 GB | 8 GB / 16 GB (for large photo sets) |
+| **Storage** | 250 MB free space (HDD) | SSD (highly recommended for fast caching) |
+| **GPU** | Integrated Graphics (DirectX 11) | Modern integrated or dedicated GPU |
 
 ---
 
@@ -69,8 +81,8 @@ To bundle the application into a standalone Windows installer (`.exe`):
    npm run package
    ```
 3. Once completed, you will find your installer in the newly created `dist/` directory:
-   - **Installer:** `dist/PictureCull Setup 1.0.0.exe`
-   - **Portable Version (Unpacked):** `dist/win-unpacked/PictureCull.exe`
+   - **Installer:** `dist/Cullexa Picture Organizer Setup 1.0.0.exe`
+   - **Portable Version (Unpacked):** `dist/win-unpacked/Cullexa Picture Organizer.exe`
 
 ---
 

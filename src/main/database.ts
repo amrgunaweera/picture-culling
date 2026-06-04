@@ -2,7 +2,7 @@ import initSqlJs, { Database as SqlJsDatabase } from 'sql.js'
 import path from 'path'
 import fs from 'fs'
 import { app } from 'electron'
-import type { Photo, PhotoDetail, PhotoFilters, Session, Flag, ColorLabel, BulkAction } from '../../types'
+import type { Photo, PhotoDetail, PhotoFilters, Session, Flag, ColorLabel, BulkAction } from '../types'
 
 let db: SqlJsDatabase
 let dbPath: string
@@ -61,15 +61,23 @@ CREATE INDEX IF NOT EXISTS idx_photos_duplicate_group ON photos(duplicate_group_
 
 function saveDb(): void {
   if (db && dbPath) {
-    const data = db.export()
-    const buffer = Buffer.from(data)
-    fs.writeFileSync(dbPath, buffer)
+    try {
+      const data = db.export()
+      const buffer = Buffer.from(data)
+      fs.writeFileSync(dbPath, buffer)
+    } catch (error) {
+      console.error('Failed to save database:', error)
+    }
   }
 }
 
 export async function initDatabase(): Promise<void> {
-  const SQL = await initSqlJs()
-  dbPath = path.join(app.getPath('userData'), 'picturecull.db')
+  const locateFile = app.isPackaged
+    ? () => path.join(process.resourcesPath, 'app.asar.unpacked', 'node_modules', 'sql.js', 'dist', 'sql-wasm.wasm')
+    : undefined
+
+  const SQL = await initSqlJs({ locateFile })
+  dbPath = path.join(app.getPath('userData'), 'cullexa-picture-organizer.db')
 
   if (fs.existsSync(dbPath)) {
     const fileBuffer = fs.readFileSync(dbPath)

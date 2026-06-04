@@ -1,4 +1,5 @@
 import { useSessionStore, usePhotoStore, useAnalysisStore } from '../store'
+import { IconCamera, IconSparkles, IconCheck, IconX, IconCircle, IconFolder } from '@tabler/icons-react'
 
 export function StatusBar() {
   const { currentSession } = useSessionStore()
@@ -13,23 +14,23 @@ export function StatusBar() {
   return (
     <div className="statusbar">
       <div className="statusbar-item">
-        📷 {photos.length} photos
+        <IconCamera size={14} /> {photos.length} photos
       </div>
 
       {analyzed > 0 && (
         <div className="statusbar-item">
-          🤖 {analyzed} analyzed
+          <IconSparkles size={14} /> {analyzed} analyzed
         </div>
       )}
 
       <div className="statusbar-item" style={{ color: 'var(--color-pick)' }}>
-        ✓ {picks}
+        <IconCheck size={14} style={{ color: 'var(--color-pick)' }} /> {picks}
       </div>
       <div className="statusbar-item" style={{ color: 'var(--color-reject)' }}>
-        ✕ {rejects}
+        <IconX size={14} style={{ color: 'var(--color-reject)' }} /> {rejects}
       </div>
       <div className="statusbar-item">
-        ○ {unflagged}
+        <IconCircle size={14} /> {unflagged}
       </div>
 
       <div className="statusbar-spacer" />
@@ -48,7 +49,7 @@ export function StatusBar() {
 
       {currentSession && (
         <div className="statusbar-item">
-          📁 {currentSession.folderPath}
+          <IconFolder size={14} /> {currentSession.folderPath}
         </div>
       )}
     </div>

@@ -4,7 +4,7 @@ import fs from 'fs'
 import * as database from './database'
 import * as fileManager from './file-manager'
 import * as aiEngine from './ai-engine'
-import type { PhotoFilters, Flag, ColorLabel, BulkAction } from '../../types'
+import type { PhotoFilters, Flag, ColorLabel, BulkAction } from '../types'
 
 let analysisAbortController: AbortController | null = null
 

@@ -1,10 +1,23 @@
 import { useSessionStore, usePhotoStore, useAnalysisStore, useUIStore, useFilterStore } from '../store'
+import {
+  IconArrowLeft,
+  IconFolderOpen,
+  IconLayoutGrid,
+  IconSquare,
+  IconColumns,
+  IconCopy,
+  IconTrash,
+  IconSparkles,
+  IconLayoutSidebar,
+  IconLoader2
+} from '@tabler/icons-react'
 
 export function Toolbar() {
   const { currentSession, openFolder, setCurrentSession } = useSessionStore()
   const { photos, selectedIds, selectAll, clearSelection, deleteRejectedPhotos } = usePhotoStore()
+  const rejectedCount = photos.filter(p => p.flag === 'reject').length
   const { startAnalysis, isAnalyzing } = useAnalysisStore()
-  const { viewMode, setViewMode, thumbnailSize, setThumbnailSize, toggleSidebar, sidebarVisible, autoAdvance, toggleAutoAdvance } = useUIStore()
+  const { viewMode, setViewMode, thumbnailSize, setThumbnailSize, toggleSidebar, sidebarVisible } = useUIStore()
   const { filters, setFilter } = useFilterStore()
 
   const handleDeleteRejected = async () => {
@@ -22,10 +35,10 @@ export function Toolbar() {
           onClick={() => setCurrentSession(null)}
           title="Back to sessions"
         >
-          ← Back
+          <IconArrowLeft size={16} /> Back
         </button>
         <button className="btn btn-ghost" onClick={() => openFolder()}>
-          📁 Open Folder
+          <IconFolderOpen size={16} /> Open Folder
         </button>
       </div>
 
@@ -38,28 +51,28 @@ export function Toolbar() {
           onClick={() => setViewMode('grid')}
           title="Grid View (G)"
         >
-          ▦
+          <IconLayoutGrid size={18} />
         </button>
         <button
           className={`btn btn-icon ${viewMode === 'loupe' ? 'active' : ''}`}
           onClick={() => setViewMode('loupe')}
           title="Loupe View (E)"
         >
-          ◻
+          <IconSquare size={18} />
         </button>
         <button
           className={`btn btn-icon ${viewMode === 'compare' ? 'active' : ''}`}
           onClick={() => setViewMode('compare')}
           title="Compare Mode (C)"
         >
-          ◫
+          <IconColumns size={18} />
         </button>
         <button
           className={`btn btn-icon ${viewMode === 'duplicates' ? 'active' : ''}`}
           onClick={() => setViewMode('duplicates')}
           title="Review Duplicates"
         >
-          👯
+          <IconCopy size={18} />
         </button>
       </div>
 
@@ -68,7 +81,7 @@ export function Toolbar() {
       {/* Thumbnail Size (Grid only) */}
       {viewMode === 'grid' && (
         <div className="toolbar-group zoom-slider">
-          <span style={{ fontSize: '10px', opacity: 0.5 }}>▦</span>
+          <IconLayoutGrid size={12} style={{ opacity: 0.5 }} />
           <input
             type="range"
             min={0}
@@ -79,34 +92,9 @@ export function Toolbar() {
               setThumbnailSize(v === 0 ? 'small' : v === 1 ? 'medium' : 'large')
             }}
           />
-          <span style={{ fontSize: '14px', opacity: 0.5 }}>▦</span>
+          <IconLayoutGrid size={16} style={{ opacity: 0.5 }} />
         </div>
       )}
-
-      {/* Sort */}
-      <div className="toolbar-group">
-        <select
-          className="select"
-          value={filters.sortBy || 'compositeScore'}
-          onChange={(e) => setFilter('sortBy', e.target.value as any)}
-        >
-          <option value="compositeScore">AI Score</option>
-          <option value="takenAt">Date Taken</option>
-          <option value="fileName">File Name</option>
-          <option value="rating">Rating</option>
-          <option value="blurScore">Sharpness</option>
-          <option value="fileSize">File Size</option>
-        </select>
-        <button
-          className="btn btn-icon"
-          onClick={() =>
-            setFilter('sortDirection', filters.sortDirection === 'asc' ? 'desc' : 'asc')
-          }
-          title={filters.sortDirection === 'asc' ? 'Ascending' : 'Descending'}
-        >
-          {filters.sortDirection === 'asc' ? '↑' : '↓'}
-        </button>
-      </div>
 
       <div className="toolbar-spacer" />
 
@@ -117,28 +105,21 @@ export function Toolbar() {
             <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-tertiary)' }}>
               {selectedIds.size} selected
             </span>
-            <button className="btn btn-sm" onClick={clearSelection}>Clear</button>
+            <button className="btn" onClick={clearSelection}>Clear</button>
           </>
         )}
       </div>
 
-      {/* Auto-advance toggle */}
-      <button
-        className={`btn btn-sm ${autoAdvance ? 'active' : ''}`}
-        onClick={toggleAutoAdvance}
-        title="Auto-advance after flagging"
-      >
-        ⏩ Auto
-      </button>
-
       {/* Delete Rejected */}
-      <button
-        className="btn btn-danger btn-sm"
-        onClick={handleDeleteRejected}
-        title="Move all rejected photos to Recycle Bin"
-      >
-        🗑️ Delete Rejected
-      </button>
+      {rejectedCount > 0 && (
+        <button
+          className="btn btn-danger"
+          onClick={handleDeleteRejected}
+          title="Move all rejected photos to Recycle Bin"
+        >
+          <IconTrash size={16} /> Delete Rejected
+        </button>
+      )}
 
       {/* AI Analysis */}
       <button
@@ -146,7 +127,15 @@ export function Toolbar() {
         onClick={() => startAnalysis()}
         disabled={isAnalyzing}
       >
-        {isAnalyzing ? '⏳ Analyzing...' : '🤖 AI Analyze'}
+        {isAnalyzing ? (
+          <>
+            <IconLoader2 size={16} className="animate-spin" /> Analyzing...
+          </>
+        ) : (
+          <>
+            <IconSparkles size={16} /> AI Analyze
+          </>
+        )}
       </button>
 
       {/* Sidebar toggle */}
@@ -155,7 +144,7 @@ export function Toolbar() {
         onClick={toggleSidebar}
         title="Toggle Sidebar"
       >
-        ◧
+        <IconLayoutSidebar size={18} />
       </button>
     </div>
   )

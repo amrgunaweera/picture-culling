@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import type { Session, Photo, PhotoFilters, AnalysisProgress, Flag, ColorLabel, ViewMode, SortField, SortDirection } from '../../../../types'
+import type { Session, Photo, PhotoFilters, AnalysisProgress, Flag, ColorLabel, ViewMode, SortField, SortDirection } from '../../../types'
 
 // --- Session Store ---
 interface SessionState {
@@ -184,7 +184,7 @@ export const useFilterStore = create<FilterState>((set, get) => ({
     set(state => {
       const current = state.filters.flags || []
       const updated = current.includes(flag)
-        ? current.filter(f => f !== flag)
+        ? current.filter((f: Flag) => f !== flag)
         : [...current, flag]
       return { filters: { ...state.filters, flags: updated.length > 0 ? updated : undefined } }
     })
@@ -195,7 +195,7 @@ export const useFilterStore = create<FilterState>((set, get) => ({
     set(state => {
       const current = state.filters.colorLabels || []
       const updated = current.includes(label)
-        ? current.filter(l => l !== label)
+        ? current.filter((l: ColorLabel) => l !== label)
         : [...current, label]
       return { filters: { ...state.filters, colorLabels: updated.length > 0 ? updated : undefined } }
     })
