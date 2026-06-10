@@ -40,7 +40,7 @@ function getClientId(): string {
  * @param params Additional event parameters
  */
 export async function trackEvent(eventName: string, params: Record<string, any> = {}) {
-  if (API_SECRET === 'YOUR_API_SECRET_HERE') {
+  if (API_SECRET === 'r-5kicyKTxa6ivAiC4HvlQ') {
     console.warn(`[Analytics] API_SECRET is not set. Event '${eventName}' will not be sent to GA4.`);
     return;
   }
