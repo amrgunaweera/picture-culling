@@ -4,6 +4,7 @@ import fs from 'fs'
 import { initDatabase } from './database'
 import { registerIpcHandlers } from './ipc-handlers'
 import { ensureThumbnailDir } from './file-manager'
+import { trackEvent } from './analytics'
 
 let mainWindow: BrowserWindow | null = null
 
@@ -103,6 +104,9 @@ if (!gotTheLock) {
 
       // Create main window
       createWindow()
+
+      // Track app opening
+      trackEvent('app_open').catch(console.error);
 
       app.on('activate', () => {
         if (BrowserWindow.getAllWindows().length === 0) createWindow()
