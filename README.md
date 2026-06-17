@@ -9,12 +9,13 @@ An AI-powered, high-performance desktop photo culling application for Windows. *
 - **Local AI Analysis Engine**: 
   - **Blur Detection**: Calculates sharpness using Laplacian variance analysis.
   - **Exposure Profiling**: Analyzes image histograms to flag under-exposed or over-exposed images.
+  - **Aesthetic Scoring**: Evaluates compositional quality, color saturation, and visual contrast.
   - **Duplicate Detection**: Identifies near-duplicate images using a perceptual difference hashing (`dHash`) algorithm.
 - **Fast Local Caching**: Powered by `sql.js` (WebAssembly SQLite) for fast retrieval of metadata and culling states.
 - **Privacy First**: 100% offline analysis. No images or metadata ever leave your computer.
 - **High-Performance Image Loading**: Leverages `sharp` for fast generation and loading of image thumbnails.
 - **Keyboard-Driven Workflow**: Fast navigation, rating, and culling using optimized keyboard shortcuts.
-- **Dual UI Views**: Toggle between a high-fidelity **Grid View** and a detailed **Loupe/Compare View**.
+- **Dual UI Views**: Toggle between a high-fidelity **Grid View** and a detailed **Gallery/Compare View**.
 
 ---
 
@@ -99,8 +100,12 @@ Designed for high-speed, mouse-free culling:
 | `P` | Pick / Flag image |
 | `X` | Reject / Mark for deletion |
 | `U` | Unflag image |
-| `Space` | Toggle Zoom / Loupe View |
-| `Delete` | Move rejected images to trash / recycle bin |
+| `Space` | Toggle Pick Flag |
+| `Delete` | Toggle Reject / Mark for deletion |
+| `G` | Switch to Grid View |
+| `E` / `Enter` | Open in Gallery View |
+| `C` | Toggle Compare View |
+| `Escape` | Back to Grid View / Clear Selection |
 
 ---
 

@@ -27,7 +27,7 @@ Optimize your workflow by switching between distinct, high-performance view mode
   * *Small:* Fit more items on screen for high-level sorting.
   * *Medium:* Balanced overview.
   * *Large:* Detailed preview.
-* **Loupe View (E / Enter):** Fullscreen preview mode supporting up to 500% zoom and mouse panning. Features a scrollable/draggable filmstrip that synchronizes with the active image.
+* **Gallery View (E / Enter):** Fullscreen preview mode supporting up to 500% zoom with interactive mouse panning, double-click to zoom, and a floating glassmorphic zoom control panel. Features a scrollable/draggable filmstrip and a high-visibility Overall Rating Badge.
 * **Compare Mode (C):** Side-by-side inspection of up to 4 selected photos to compare fine details (e.g., focus, facial expressions) side-by-side.
 * **Duplicates Mode:** Dedicated dashboard showing duplicate photo clusters with quality rankings.
 
@@ -35,8 +35,8 @@ Optimize your workflow by switching between distinct, high-performance view mode
 Organize and filter your photos using a standard, professional metadata system:
 * **Flagging:** Mark photos as **Pick** (green badge/check) or **Reject** (red badge/cross).
 * **Star Ratings:** Rate photos on a scale of **1 to 5 stars** (yellow glowing stars).
-* **Color Labels:** Categorize images using five color labels (Red, Yellow, Green, Blue, Purple).
-* **Filter Bar:** Instantly filter photos by Picks, Rejects, Unflagged, Minimum Star Rating, Duplicates Only, and Color Labels.
+* **Color Labels:** Categorize images using five color labels (Red, Yellow, Green, Blue, Purple) with distinctive glowing active states.
+* **Filter Bar:** Instantly filter photos by Picks, Rejects, Unflagged, Minimum Star Rating, Duplicates Only, and Color Labels. Flag toggle buttons feature vibrant premium styling when active.
 * **Trash & Culling:** Move all **Rejected** photos to the Windows Recycle Bin with one click, freeing up local disk space safely.
 
 ### 5. 📁 Session & File Management
@@ -54,7 +54,7 @@ Accelerate your culling workflow with single-key shortcuts:
 * **0:** Clear Star Rating
 * **Space:** Toggle Pick Flag
 * **G:** Switch to Grid View
-* **E / Enter:** Switch to Loupe View (on selected image)
+* **E / Enter:** Switch to Gallery View (on selected image)
 * **C:** Toggle Compare View
 * **Left / Right Arrows:** Navigate through the filmstrip
 * **Escape:** Back to Grid View / Clear Selection
