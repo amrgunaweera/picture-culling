@@ -1,12 +1,28 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { usePhotoStore, useUIStore } from '../store'
-import { IconPhoto, IconChevronLeft, IconChevronRight, IconCheck, IconX, IconStar, IconCamera } from '@tabler/icons-react'
+import { IconPhoto, IconChevronLeft, IconChevronRight, IconCheck, IconX, IconStar, IconCamera, IconZoomIn, IconZoomOut } from '@tabler/icons-react'
+
+function getScoreClass(score: number | null): string {
+  if (score === null) return ''
+  if (score >= 0.8) return 'score-great'
+  if (score >= 0.6) return 'score-good'
+  if (score >= 0.4) return 'score-ok'
+  if (score >= 0.2) return 'score-poor'
+  return 'score-bad'
+}
+
+function formatScore(score: number | null): string {
+  if (score === null) return '—'
+  return Math.round(score * 100) + '%'
+}
 
 export function PhotoViewer() {
   const { photos, currentIndex, setCurrentIndex, setRating, setFlag } = usePhotoStore()
   const { autoAdvance, setViewMode } = useUIStore()
   const [zoom, setZoom] = useState(1)
   const [pan, setPan] = useState({ x: 0, y: 0 })
+  const [isPanning, setIsPanning] = useState(false)
+  const startPan = useRef({ x: 0, y: 0 })
   const imageRef = useRef<HTMLImageElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const filmstripRef = useRef<HTMLDivElement>(null)
@@ -60,8 +76,40 @@ export function PhotoViewer() {
   const handleWheel = useCallback((e: React.WheelEvent) => {
     e.preventDefault()
     const delta = e.deltaY > 0 ? 0.9 : 1.1
-    setZoom(prev => Math.min(5, Math.max(0.5, prev * delta)))
+    setZoom(prev => {
+      const next = Math.min(5, Math.max(0.5, prev * delta))
+      if (next <= 1) setPan({ x: 0, y: 0 })
+      return next
+    })
   }, [])
+
+  const handleCanvasMouseDown = (e: React.MouseEvent) => {
+    if (zoom <= 1) return
+    if (e.button !== 0) return
+    setIsPanning(true)
+    startPan.current = { x: e.clientX - pan.x, y: e.clientY - pan.y }
+  }
+
+  const handleCanvasMouseMove = (e: React.MouseEvent) => {
+    if (!isPanning) return
+    const x = e.clientX - startPan.current.x
+    const y = e.clientY - startPan.current.y
+    setPan({ x, y })
+  }
+
+  const handleCanvasMouseUp = () => {
+    setIsPanning(false)
+  }
+
+  const handleImageDoubleClick = () => {
+    if (zoom > 1) {
+      setZoom(1)
+      setPan({ x: 0, y: 0 })
+    } else {
+      setZoom(2.5)
+      setPan({ x: 0, y: 0 })
+    }
+  }
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if (!filmstripRef.current) return
@@ -101,7 +149,69 @@ export function PhotoViewer() {
         className="photo-viewer-canvas"
         ref={containerRef}
         onWheel={handleWheel}
+        onMouseDown={handleCanvasMouseDown}
+        onMouseMove={handleCanvasMouseMove}
+        onMouseUp={handleCanvasMouseUp}
+        onMouseLeave={handleCanvasMouseUp}
+        style={{
+          cursor: zoom > 1 ? (isPanning ? 'grabbing' : 'grab') : 'default'
+        }}
       >
+        {/* Overall Rating Display */}
+        {photo.compositeScore !== null && (
+          <div className="photo-viewer-rating">
+            <span className="rating-label">Overall Rating</span>
+            <div className={`rating-value-badge ${getScoreClass(photo.compositeScore)}`}>
+              {formatScore(photo.compositeScore)}
+            </div>
+          </div>
+        )}
+
+        {/* Zoom Controls */}
+        <div className="photo-viewer-zoom-controls">
+          <button
+            className="btn btn-icon btn-ghost zoom-btn"
+            onClick={() => setZoom(prev => {
+              const next = Math.max(0.5, prev - 0.25)
+              if (next <= 1) setPan({ x: 0, y: 0 })
+              return next
+            })}
+            disabled={zoom <= 0.5}
+            title="Zoom Out"
+          >
+            <IconZoomOut size={16} />
+          </button>
+          <input
+            type="range"
+            min={0.5}
+            max={5.0}
+            step={0.05}
+            value={zoom}
+            onChange={(e) => {
+              const val = Number(e.target.value)
+              setZoom(val)
+              if (val <= 1) setPan({ x: 0, y: 0 })
+            }}
+            className="zoom-slider-range"
+            title="Drag to zoom"
+          />
+          <button
+            className="btn btn-icon btn-ghost zoom-btn"
+            onClick={() => setZoom(prev => Math.min(5.0, prev + 0.25))}
+            disabled={zoom >= 5.0}
+            title="Zoom In"
+          >
+            <IconZoomIn size={16} />
+          </button>
+          <span
+            className="zoom-percentage"
+            onDoubleClick={() => setZoom(1)}
+            title="Double click to reset zoom (100%)"
+          >
+            {Math.round(zoom * 100)}%
+          </span>
+        </div>
+
         {/* Previous button */}
         {currentIndex > 0 && (
           <button
@@ -132,9 +242,9 @@ export function PhotoViewer() {
           src={imageUrl}
           alt={photo.fileName}
           style={{
-            transform: `scale(${zoom}) translate(${pan.x}px, ${pan.y}px)`,
-            cursor: zoom > 1 ? 'grab' : 'default'
+            transform: `scale(${zoom}) translate(${pan.x}px, ${pan.y}px)`
           }}
+          onDoubleClick={handleImageDoubleClick}
           draggable={false}
         />
 

@@ -74,11 +74,11 @@ export function App() {
         <span className="app-titlebar-title">Cullexa Picture Organizer</span>
       </div>
       <Toolbar />
-      <FilterBar />
+      {viewMode === 'grid' && <FilterBar />}
       <div className="app-body">
         <div className="app-main">
           {viewMode === 'grid' && <PhotoGrid />}
-          {viewMode === 'loupe' && <PhotoViewer />}
+          {viewMode === 'gallery' && <PhotoViewer />}
           {viewMode === 'compare' && <CompareView />}
           {viewMode === 'duplicates' && <DuplicateView />}
         </div>

@@ -28,7 +28,7 @@ export function DuplicateView() {
             <IconCircleCheck size={48} stroke={1.5} style={{ color: 'var(--color-pick)' }} />
           </div>
           <div className="empty-state-title">No duplicates found</div>
-          <div className="empty-state-subtitle">Run AI analysis to find duplicate groups.</div>
+          <div className="empty-state-text">Run AI analysis to find duplicate groups.</div>
         </div>
       </div>
     )
@@ -81,15 +81,15 @@ export function DuplicateView() {
                         display: 'flex', 
                         flexDirection: 'column', 
                         gap: '8px',
-                        border: isBest ? '2px solid var(--primary-color)' : '2px solid transparent',
+                        border: isBest ? '2px solid var(--accent-primary)' : '2px solid transparent',
                         borderRadius: 'var(--radius-md)',
                         padding: '4px'
                       }}
                     >
                       {isBest && (
                         <div style={{ 
-                          background: 'var(--primary-color)', 
-                          color: 'var(--bg-default)', 
+                          background: 'var(--accent-primary)', 
+                          color: '#ffffff', 
                           fontSize: 'var(--text-xs)', 
                           fontWeight: 600,
                           textAlign: 'center',

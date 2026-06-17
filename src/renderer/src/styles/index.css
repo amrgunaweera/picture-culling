@@ -598,7 +598,7 @@ body {
   color: #fcd34d;
 }
 
-/* --- Photo Viewer (Loupe) --- */
+/* --- Photo Viewer (Gallery) --- */
 .photo-viewer {
   flex: 1;
   display: flex;
@@ -620,7 +620,142 @@ body {
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
-  transition: transform var(--transition-base);
+  /* Removed transition: transform to prevent lag during active zoom and pan */
+}
+
+/* --- Photo Viewer Rating Badge --- */
+.photo-viewer-rating {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 4px var(--space-3);
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-md);
+  height: 36px;
+}
+
+.photo-viewer-rating .rating-label {
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  user-select: none;
+}
+
+.photo-viewer-rating .rating-value-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 8px;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  color: white;
+  border-radius: var(--radius-full);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.photo-viewer-rating .rating-value-badge.score-great {
+  background: var(--score-great);
+}
+.photo-viewer-rating .rating-value-badge.score-good {
+  background: var(--score-good);
+}
+.photo-viewer-rating .rating-value-badge.score-ok {
+  background: var(--score-ok);
+}
+.photo-viewer-rating .rating-value-badge.score-poor {
+  background: var(--score-poor);
+}
+.photo-viewer-rating .rating-value-badge.score-bad {
+  background: var(--score-bad);
+}
+
+/* --- Photo Viewer Zoom Controls --- */
+.photo-viewer-zoom-controls {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 4px var(--space-3);
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-md);
+  height: 36px;
+}
+
+.photo-viewer-zoom-controls .zoom-btn {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-full);
+  color: var(--text-secondary);
+  padding: 0;
+  background: transparent;
+  border: none;
+}
+
+.photo-viewer-zoom-controls .zoom-btn:hover:not(:disabled) {
+  color: var(--text-primary);
+  background: var(--bg-hover);
+}
+
+.photo-viewer-zoom-controls .zoom-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.photo-viewer-zoom-controls .zoom-slider-range {
+  width: 80px;
+  height: 4px;
+  appearance: none;
+  background: var(--bg-surface);
+  border-radius: var(--radius-full);
+  outline: none;
+  cursor: pointer;
+  border: none;
+}
+
+.photo-viewer-zoom-controls .zoom-slider-range::-webkit-slider-thumb {
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: var(--radius-full);
+  background: var(--accent-primary);
+  transition: box-shadow var(--transition-fast), transform var(--transition-fast);
+}
+
+.photo-viewer-zoom-controls .zoom-slider-range::-webkit-slider-thumb:hover {
+  box-shadow: 0 0 6px var(--accent-glow);
+  transform: scale(1.1);
+}
+
+.photo-viewer-zoom-controls .zoom-percentage {
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  min-width: 36px;
+  text-align: right;
+  cursor: pointer;
+  user-select: none;
+  font-weight: 500;
+}
+
+.photo-viewer-zoom-controls .zoom-percentage:hover {
+  color: var(--text-primary);
 }
 
 /* --- Filmstrip --- */
@@ -1283,6 +1418,35 @@ body {
   background: var(--accent-primary);
 }
 
+/* --- Photo Card — Expand Button --- */
+.photo-card-expand-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 22px;
+  height: 22px;
+  border-radius: var(--radius-sm);
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity var(--transition-fast), border-color var(--transition-fast), background var(--transition-fast), color var(--transition-fast);
+  z-index: 5;
+  color: white;
+}
+
+.photo-card:hover .photo-card-expand-btn {
+  opacity: 1;
+}
+
+.photo-card-expand-btn:hover {
+  border-color: var(--accent-primary);
+  background: var(--accent-primary);
+}
+
 /* --- CompareView — Remove button --- */
 .compare-remove-btn {
   position: absolute;
@@ -1353,4 +1517,179 @@ body {
   background: rgba(124, 92, 252, 0.15);
   border-color: var(--border-accent);
   color: var(--accent-secondary);
+}
+
+/* --- Flag Filter Chips Pressed States --- */
+.filter-chip.flag-chip-pick,
+.filter-chip.flag-chip-reject,
+.filter-chip.flag-chip-unflagged {
+  transition: transform var(--transition-fast), border-color var(--transition-fast), background var(--transition-fast), box-shadow var(--transition-fast), color var(--transition-fast);
+}
+
+.filter-chip.flag-chip-pick:hover:not(.active) {
+  border-color: rgba(34, 197, 94, 0.4);
+  background: rgba(34, 197, 94, 0.08);
+  color: var(--text-primary);
+}
+
+.filter-chip.flag-chip-pick.active {
+  background: rgba(34, 197, 94, 0.22);
+  border-color: var(--color-pick);
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.4);
+  transform: translateY(-1px);
+}
+
+.filter-chip.flag-chip-pick.active:hover {
+  background: rgba(34, 197, 94, 0.3);
+  box-shadow: 0 0 14px rgba(34, 197, 94, 0.55);
+}
+
+.filter-chip.flag-chip-pick.active svg {
+  color: var(--color-pick);
+  filter: drop-shadow(0 0 2px rgba(34, 197, 94, 0.5));
+}
+
+.filter-chip.flag-chip-reject:hover:not(.active) {
+  border-color: rgba(239, 68, 68, 0.4);
+  background: rgba(239, 68, 68, 0.08);
+  color: var(--text-primary);
+}
+
+.filter-chip.flag-chip-reject.active {
+  background: rgba(239, 68, 68, 0.22);
+  border-color: var(--color-reject);
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
+  transform: translateY(-1px);
+}
+
+.filter-chip.flag-chip-reject.active:hover {
+  background: rgba(239, 68, 68, 0.3);
+  box-shadow: 0 0 14px rgba(239, 68, 68, 0.55);
+}
+
+.filter-chip.flag-chip-reject.active svg {
+  color: var(--color-reject);
+  filter: drop-shadow(0 0 2px rgba(239, 68, 68, 0.5));
+}
+
+.filter-chip.flag-chip-unflagged:hover:not(.active) {
+  border-color: rgba(59, 130, 246, 0.4);
+  background: rgba(59, 130, 246, 0.08);
+  color: var(--text-primary);
+}
+
+.filter-chip.flag-chip-unflagged.active {
+  background: rgba(59, 130, 246, 0.22);
+  border-color: var(--color-info);
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.4);
+  transform: translateY(-1px);
+}
+
+.filter-chip.flag-chip-unflagged.active:hover {
+  background: rgba(59, 130, 246, 0.3);
+  box-shadow: 0 0 14px rgba(59, 130, 246, 0.55);
+}
+
+.filter-chip.flag-chip-unflagged.active svg {
+  color: var(--color-info);
+  filter: drop-shadow(0 0 2px rgba(59, 130, 246, 0.5));
+}
+
+.filter-chip:active {
+  transform: scale(0.96) !important;
+}
+
+.filter-chip.active:active {
+  transform: translateY(-1px) scale(0.96) !important;
+}
+
+/* --- Color Label Filter Chips Pressed States --- */
+.filter-chip.color-label-chip {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  transition: transform var(--transition-fast), border-color var(--transition-fast), background var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.filter-chip.color-label-chip.active.red {
+  background: rgba(239, 68, 68, 0.18);
+  border-color: var(--label-red);
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.3);
+}
+
+.filter-chip.color-label-chip.active.yellow {
+  background: rgba(234, 179, 8, 0.18);
+  border-color: var(--label-yellow);
+  box-shadow: 0 0 8px rgba(234, 179, 8, 0.3);
+}
+
+.filter-chip.color-label-chip.active.green {
+  background: rgba(34, 197, 94, 0.18);
+  border-color: var(--label-green);
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.3);
+}
+
+.filter-chip.color-label-chip.active.blue {
+  background: rgba(59, 130, 246, 0.18);
+  border-color: var(--label-blue);
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
+}
+
+.filter-chip.color-label-chip.active.purple {
+  background: rgba(168, 85, 247, 0.18);
+  border-color: var(--label-purple);
+  box-shadow: 0 0 8px rgba(168, 85, 247, 0.3);
+}
+
+.filter-chip.color-label-chip.active .color-dot {
+  transform: scale(1.3);
+  box-shadow: 0 0 4px rgba(255, 255, 255, 0.4);
+}
+
+/* --- Sidebar Color Label Buttons Pressed States --- */
+.btn.sidebar-color-btn {
+  transition: transform var(--transition-fast), border-color var(--transition-fast), background var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.btn.sidebar-color-btn.active.red {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: var(--label-red);
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.35);
+}
+
+.btn.sidebar-color-btn.active.yellow {
+  background: rgba(234, 179, 8, 0.2);
+  border-color: var(--label-yellow);
+  box-shadow: 0 0 8px rgba(234, 179, 8, 0.35);
+}
+
+.btn.sidebar-color-btn.active.green {
+  background: rgba(34, 197, 94, 0.2);
+  border-color: var(--label-green);
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.35);
+}
+
+.btn.sidebar-color-btn.active.blue {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: var(--label-blue);
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.35);
+}
+
+.btn.sidebar-color-btn.active.purple {
+  background: rgba(168, 85, 247, 0.2);
+  border-color: var(--label-purple);
+  box-shadow: 0 0 8px rgba(168, 85, 247, 0.35);
+}
+
+.btn.sidebar-color-btn.active .color-dot {
+  transform: scale(1.35);
+  box-shadow: 0 0 4px rgba(255, 255, 255, 0.4);
 }

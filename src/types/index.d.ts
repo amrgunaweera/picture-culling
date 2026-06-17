@@ -42,7 +42,7 @@ export interface Session {
 }
 export type Flag = 'pick' | 'reject' | 'none';
 export type ColorLabel = 'none' | 'red' | 'yellow' | 'green' | 'blue' | 'purple';
-export type ViewMode = 'grid' | 'loupe' | 'compare' | 'duplicates';
+export type ViewMode = 'grid' | 'gallery' | 'compare' | 'duplicates';
 export type SortField = 'compositeScore' | 'takenAt' | 'fileName' | 'rating' | 'blurScore' | 'fileSize';
 export type SortDirection = 'asc' | 'desc';
 export interface PhotoFilters {

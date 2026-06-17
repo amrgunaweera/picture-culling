@@ -126,6 +126,74 @@ export async function analyzeExposure(filePath: string): Promise<number> {
 }
 
 // ============================================================================
+// AESTHETIC SCORING
+// ============================================================================
+
+/**
+ * Calculate a basic aesthetic score based on colorfulness/saturation.
+ * Uses a simplified metric (Hasler and Süsstrunk).
+ * Returns 0 (dull/grayscale) to 1 (highly colorful/aesthetic).
+ */
+export async function analyzeAesthetics(filePath: string): Promise<number> {
+  const { data } = await sharp(filePath, { failOn: 'none' })
+    .resize(256, 256, { fit: 'inside' })
+    .ensureAlpha() // ensure we have RGBA channels for predictable iteration
+    .raw()
+    .toBuffer({ resolveWithObject: true })
+
+  let sumRg = 0, sumYb = 0
+  let count = 0
+
+  // We need to iterate over RGBA
+  for (let i = 0; i < data.length; i += 4) {
+    const r = data[i]
+    const g = data[i + 1]
+    const b = data[i + 2]
+
+    const rg = r - g
+    const yb = 0.5 * (r + g) - b
+
+    sumRg += rg
+    sumYb += yb
+    count++
+  }
+
+  const meanRg = sumRg / count
+  const meanYb = sumYb / count
+
+  let sumSqRg = 0
+  let sumSqYb = 0
+
+  for (let i = 0; i < data.length; i += 4) {
+    const r = data[i]
+    const g = data[i + 1]
+    const b = data[i + 2]
+
+    const rg = r - g
+    const yb = 0.5 * (r + g) - b
+
+    sumSqRg += (rg - meanRg) * (rg - meanRg)
+    sumSqYb += (yb - meanYb) * (yb - meanYb)
+  }
+
+  const stdRg = Math.sqrt(sumSqRg / count)
+  const stdYb = Math.sqrt(sumSqYb / count)
+
+  const stdRoot = Math.sqrt(stdRg * stdRg + stdYb * stdYb)
+  const meanRoot = Math.sqrt(meanRg * meanRg + meanYb * meanYb)
+
+  // Colorfulness metric
+  const colorfulness = stdRoot + 0.3 * meanRoot
+
+  // Normalize: 0 to ~100 range mapped to 0-1
+  // We'll cap it at 1. Typical photos score between 15 and 80.
+  // Add a slight boost so normal photos get a decent score.
+  let score = colorfulness / 80
+  
+  return Math.min(1, Math.max(0, score))
+}
+
+// ============================================================================
 // DUPLICATE DETECTION — Perceptual Hash (dHash)
 // ============================================================================
 
@@ -296,14 +364,16 @@ export async function detectFaces(filePath: string): Promise<number> {
 export async function analyzePhoto(filePath: string): Promise<{
   blurScore: number
   exposureScore: number
+  aestheticScore: number
   phash: string
   faceCount: number
   compositeScore: number
 }> {
   // Run core metrics together — these only depend on sharp and never fail hard
-  const [blurScore, exposureScore, phash] = await Promise.all([
+  const [blurScore, exposureScore, aestheticScore, phash] = await Promise.all([
     detectBlur(filePath),
     analyzeExposure(filePath),
+    analyzeAesthetics(filePath),
     generatePerceptualHash(filePath)
   ])
 
@@ -315,11 +385,12 @@ export async function analyzePhoto(filePath: string): Promise<{
     // Non-fatal: proceed with faceCount = 0
   }
 
-  const compositeScore = calculateCompositeScore({ blurScore, exposureScore, faceCount })
+  const compositeScore = calculateCompositeScore({ blurScore, exposureScore, aestheticScore, faceCount })
 
   return {
     blurScore,
     exposureScore,
+    aestheticScore,
     phash,
     faceCount,
     compositeScore

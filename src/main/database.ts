@@ -123,7 +123,7 @@ export function updateSessionCounts(sessionId: number): void {
   const r1 = db.exec('SELECT COUNT(*) FROM photos WHERE session_id = ?', [sessionId])
   const photoCount = r1.length > 0 ? r1[0].values[0][0] as number : 0
 
-  const r2 = db.exec('SELECT COUNT(*) FROM photos WHERE session_id = ? AND blur_score IS NOT NULL', [sessionId])
+  const r2 = db.exec('SELECT COUNT(*) FROM photos WHERE session_id = ? AND blur_score IS NOT NULL AND aesthetic_score IS NOT NULL', [sessionId])
   const analyzedCount = r2.length > 0 ? r2[0].values[0][0] as number : 0
 
   db.run('UPDATE sessions SET photo_count = ?, analyzed_count = ? WHERE id = ?', [photoCount, analyzedCount, sessionId])
@@ -305,7 +305,7 @@ export function getPhotoById(id: number): PhotoDetail | null {
 
 export function getUnanalyzedPhotos(sessionId: number): { id: number; filePath: string }[] {
   const result = db.exec(
-    'SELECT id, file_path FROM photos WHERE session_id = ? AND blur_score IS NULL',
+    'SELECT id, file_path FROM photos WHERE session_id = ? AND (blur_score IS NULL OR aesthetic_score IS NULL)',
     [sessionId]
   )
   if (result.length === 0) return []

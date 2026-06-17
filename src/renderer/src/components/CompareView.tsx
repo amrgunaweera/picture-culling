@@ -83,7 +83,7 @@ export function CompareView() {
           flex: 1,
           overflow: 'hidden',
           gap: '2px',
-          background: 'var(--bg-default)'
+          background: 'var(--bg-primary)'
         }}
         onWheel={handleWheel}
       >

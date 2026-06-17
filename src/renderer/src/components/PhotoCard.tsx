@@ -1,7 +1,7 @@
 import { useCallback, memo } from 'react'
 import { usePhotoStore, useUIStore } from '../store'
 import type { Photo } from '../../../types'
-import { IconCamera, IconCheck, IconX, IconStar } from '@tabler/icons-react'
+import { IconCamera, IconCheck, IconX, IconStar, IconArrowsMaximize } from '@tabler/icons-react'
 
 function getScoreClass(score: number | null): string {
   if (score === null) return ''
@@ -42,7 +42,13 @@ export const PhotoCard = memo(function PhotoCard({ photo, index }: PhotoCardProp
 
   const handleDoubleClick = useCallback(() => {
     setCurrentIndex(index)
-    setViewMode('loupe')
+    setViewMode('gallery')
+  }, [index])
+
+  const handleExpandClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation()
+    setCurrentIndex(index)
+    setViewMode('gallery')
   }, [index])
 
   const flagClass = photo.flag === 'pick' ? 'flag-pick' : photo.flag === 'reject' ? 'flag-reject' : ''
@@ -61,6 +67,14 @@ export const PhotoCard = memo(function PhotoCard({ photo, index }: PhotoCardProp
         title={isSelected ? 'Remove from selection' : 'Add to selection (for Compare)'}
       >
         {isSelected && <IconCheck size={13} stroke={3} />}
+      </div>
+      {/* Expand/Gallery button */}
+      <div
+        className="photo-card-expand-btn"
+        onClick={handleExpandClick}
+        title="View in Gallery (E)"
+      >
+        <IconArrowsMaximize size={13} stroke={3} />
       </div>
       {thumbnailUrl ? (
         <img

@@ -17,19 +17,19 @@ export function FilterBar() {
     <div className="filter-bar">
       {/* Flag filters */}
       <button
-        className={`filter-chip ${filters.flags?.includes('pick') ? 'active' : ''}`}
+        className={`filter-chip flag-chip-pick ${filters.flags?.includes('pick') ? 'active' : ''}`}
         onClick={() => toggleFlag('pick')}
       >
         <IconCheck size={14} /> Picks
       </button>
       <button
-        className={`filter-chip ${filters.flags?.includes('reject') ? 'active' : ''}`}
+        className={`filter-chip flag-chip-reject ${filters.flags?.includes('reject') ? 'active' : ''}`}
         onClick={() => toggleFlag('reject')}
       >
         <IconX size={14} /> Rejects
       </button>
       <button
-        className={`filter-chip ${filters.flags?.includes('none') ? 'active' : ''}`}
+        className={`filter-chip flag-chip-unflagged ${filters.flags?.includes('none') ? 'active' : ''}`}
         onClick={() => toggleFlag('none')}
       >
         <IconCircle size={14} /> Unflagged
@@ -41,9 +41,9 @@ export function FilterBar() {
       {(['red', 'yellow', 'green', 'blue', 'purple'] as ColorLabel[]).map(color => (
         <button
           key={color}
-          className={`filter-chip ${filters.colorLabels?.includes(color) ? 'active' : ''}`}
+          className={`filter-chip color-label-chip ${color} ${filters.colorLabels?.includes(color) ? 'active' : ''}`}
           onClick={() => toggleColorLabel(color)}
-          style={{ padding: '4px 8px' }}
+          title={`${color.charAt(0).toUpperCase() + color.slice(1)} Label`}
         >
           <span className={`color-dot ${color}`} />
         </button>

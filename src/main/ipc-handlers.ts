@@ -13,11 +13,15 @@ export function registerIpcHandlers(): void {
 
   ipcMain.handle('open-folder-dialog', async () => {
     const result = await dialog.showOpenDialog({
-      properties: ['openDirectory'],
-      title: 'Select Photo Folder'
+      properties: ['openFile'],
+      filters: [
+        { name: 'Images', extensions: ['jpg', 'jpeg', 'png', 'tiff', 'tif', 'webp', 'bmp', 'cr2', 'cr3', 'nef', 'arw', 'orf', 'rw2', 'dng', 'raf'] }
+      ],
+      title: 'Select any image inside the folder you want to open',
+      buttonLabel: 'Open Folder'
     })
     if (result.canceled || result.filePaths.length === 0) return null
-    return result.filePaths[0]
+    return path.dirname(result.filePaths[0])
   })
 
   ipcMain.handle('scan-folder', async (event, folderPath: string) => {
@@ -161,6 +165,7 @@ export function registerIpcHandlers(): void {
         database.updatePhotoScores(photo.id, {
           blurScore: scores.blurScore,
           exposureScore: scores.exposureScore,
+          aestheticScore: scores.aestheticScore,
           compositeScore: scores.compositeScore,
           phash: scores.phash,
           faceCount: scores.faceCount

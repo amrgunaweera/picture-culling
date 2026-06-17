@@ -37,8 +37,8 @@ export function Sidebar() {
   const { photos, currentIndex, selectedIds, setRating, setFlag, setColorLabel, setCurrentIndex } = usePhotoStore()
   const { viewMode, autoAdvance } = useUIStore()
 
-  // Show info for the current photo in loupe mode, or the first selected in grid mode
-  const selectedId = (selectedIds.size > 0 && viewMode !== 'loupe') ? Array.from(selectedIds)[0] : null
+  // Show info for the current photo in gallery mode, or the first selected in grid mode
+  const selectedId = (selectedIds.size > 0 && viewMode !== 'gallery') ? Array.from(selectedIds)[0] : null
   const photo = selectedId
     ? photos.find(p => p.id === selectedId)
     : photos[currentIndex]
@@ -116,7 +116,7 @@ export function Sidebar() {
             className={`btn btn-sm ${photo.flag === 'pick' ? 'btn-success' : ''}`}
             onClick={() => {
               setFlag(photo.id, photo.flag === 'pick' ? 'none' : 'pick')
-              if (autoAdvance && viewMode === 'loupe' && currentIndex < photos.length - 1) {
+              if (autoAdvance && viewMode === 'gallery' && currentIndex < photos.length - 1) {
                 setCurrentIndex(currentIndex + 1)
               }
             }}
@@ -127,7 +127,7 @@ export function Sidebar() {
             className={`btn btn-sm ${photo.flag === 'reject' ? 'btn-danger' : ''}`}
             onClick={() => {
               setFlag(photo.id, photo.flag === 'reject' ? 'none' : 'reject')
-              if (autoAdvance && viewMode === 'loupe' && currentIndex < photos.length - 1) {
+              if (autoAdvance && viewMode === 'gallery' && currentIndex < photos.length - 1) {
                 setCurrentIndex(currentIndex + 1)
               }
             }}
@@ -149,7 +149,7 @@ export function Sidebar() {
           {(['red', 'yellow', 'green', 'blue', 'purple'] as ColorLabel[]).map(color => (
             <button
               key={color}
-              className={`btn btn-icon btn-sm ${photo.colorLabel === color ? 'active' : ''}`}
+              className={`btn btn-icon btn-sm sidebar-color-btn ${color} ${photo.colorLabel === color ? 'active' : ''}`}
               style={{
                 width: '24px',
                 height: '24px',
@@ -157,6 +157,7 @@ export function Sidebar() {
                 padding: 0
               }}
               onClick={() => setColorLabel(photo.id, photo.colorLabel === color ? 'none' : color)}
+              title={`${color.charAt(0).toUpperCase() + color.slice(1)} Label`}
             >
               <span className={`color-dot ${color}`} />
             </button>
@@ -239,7 +240,7 @@ export function Sidebar() {
           <span className="sidebar-label"><kbd className="kbd">1-5</kbd> Rate</span>
           <span className="sidebar-label"><kbd className="kbd">U</kbd> Unflag</span>
           <span className="sidebar-label"><kbd className="kbd">G</kbd> Grid</span>
-          <span className="sidebar-label"><kbd className="kbd">E</kbd> Loupe</span>
+          <span className="sidebar-label"><kbd className="kbd">E</kbd> Gallery</span>
           <span className="sidebar-label"><kbd className="kbd">←→</kbd> Navigate</span>
           <span className="sidebar-label"><kbd className="kbd">Esc</kbd> Back</span>
         </div>

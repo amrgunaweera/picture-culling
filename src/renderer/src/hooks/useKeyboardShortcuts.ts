@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { usePhotoStore, useUIStore, useFilterStore } from '../store'
 
 export function useKeyboardShortcuts() {
-  const { photos, currentIndex, setCurrentIndex, setRating, setFlag, selectAll, clearSelection } = usePhotoStore()
+  const { photos, currentIndex, setCurrentIndex, setRating, setFlag, selectAll, clearSelection, selectedIds } = usePhotoStore()
   const { viewMode, setViewMode, autoAdvance } = useUIStore()
   const { loadPhotos } = usePhotoStore()
 
@@ -43,7 +43,7 @@ export function useKeyboardShortcuts() {
         case 'e':
         case 'enter':
           e.preventDefault()
-          if (viewMode === 'grid') setViewMode('loupe')
+          if (viewMode === 'grid') setViewMode('gallery')
           break
 
         case 'c':
@@ -78,34 +78,60 @@ export function useKeyboardShortcuts() {
 
         // Flagging
         case 'p':
-          if (photo) {
-            e.preventDefault()
-            setFlag(photo.id, photo.flag === 'pick' ? 'none' : 'pick')
-            if (autoAdvance) goNext()
+          {
+            const targetPhotos = viewMode === 'gallery'
+              ? (photos[currentIndex] ? [photos[currentIndex]] : [])
+              : photos.filter(p => selectedIds.has(p.id))
+            if (targetPhotos.length > 0) {
+              e.preventDefault()
+              const allPicked = targetPhotos.every(p => p.flag === 'pick')
+              const nextFlag = allPicked ? 'none' : 'pick'
+              Promise.all(targetPhotos.map(p => setFlag(p.id, nextFlag)))
+              if (viewMode === 'gallery' && autoAdvance) goNext()
+            }
           }
           break
 
         case 'x':
         case 'delete':
-          if (photo) {
-            e.preventDefault()
-            setFlag(photo.id, photo.flag === 'reject' ? 'none' : 'reject')
-            if (autoAdvance) goNext()
+          {
+            const targetPhotos = viewMode === 'gallery'
+              ? (photos[currentIndex] ? [photos[currentIndex]] : [])
+              : photos.filter(p => selectedIds.has(p.id))
+            if (targetPhotos.length > 0) {
+              e.preventDefault()
+              const allRejected = targetPhotos.every(p => p.flag === 'reject')
+              const nextFlag = allRejected ? 'none' : 'reject'
+              Promise.all(targetPhotos.map(p => setFlag(p.id, nextFlag)))
+              if (viewMode === 'gallery' && autoAdvance) goNext()
+            }
           }
           break
 
         case 'u':
-          if (photo) {
-            e.preventDefault()
-            setFlag(photo.id, 'none')
+          {
+            const targetPhotos = viewMode === 'gallery'
+              ? (photos[currentIndex] ? [photos[currentIndex]] : [])
+              : photos.filter(p => selectedIds.has(p.id))
+            if (targetPhotos.length > 0) {
+              e.preventDefault()
+              Promise.all(targetPhotos.map(p => setFlag(p.id, 'none')))
+            }
           }
           break
 
         case ' ': // Space = toggle pick
-          if (photo) {
-            e.preventDefault()
-            setFlag(photo.id, photo.flag === 'pick' ? 'none' : 'pick')
-            if (autoAdvance) goNext()
+          {
+            const targetPhotos = viewMode === 'gallery'
+              ? (photos[currentIndex] ? [photos[currentIndex]] : [])
+              : photos.filter(p => selectedIds.has(p.id))
+            if (targetPhotos.length > 0) {
+              e.preventDefault()
+              const allPicked = targetPhotos.every(p => p.flag === 'pick')
+              const nextFlag = allPicked ? 'none' : 'pick'
+              Promise.all(targetPhotos.map(p => setFlag(p.id, nextFlag)))
+              if (viewMode === 'gallery' && autoAdvance) goNext()
+            }
           }
           break
 

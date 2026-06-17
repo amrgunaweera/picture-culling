@@ -41,8 +41,11 @@ export function ImportView() {
         <div className="dropzone-icon" style={{ display: 'flex', justifyContent: 'center' }}>
           <IconFolderOpen size={48} stroke={1.5} />
         </div>
-        <div className="dropzone-text">Click to select a folder of photos</div>
+        <div className="dropzone-text">Click to select any image from a folder</div>
         <div className="dropzone-hint">Supports JPEG, PNG, TIFF, WebP, and RAW formats</div>
+        <div className="dropzone-hint" style={{ color: 'var(--text-muted)', fontSize: '11px', marginTop: '4px' }}>
+          Select any single photo. The app will automatically load its entire folder.
+        </div>
       </div>
 
       {sessions.length > 0 && (

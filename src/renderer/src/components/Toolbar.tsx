@@ -3,7 +3,7 @@ import {
   IconArrowLeft,
   IconFolderOpen,
   IconLayoutGrid,
-  IconSquare,
+  IconPhoto,
   IconColumns,
   IconCopy,
   IconTrash,
@@ -54,11 +54,11 @@ export function Toolbar() {
           <IconLayoutGrid size={18} />
         </button>
         <button
-          className={`btn btn-icon ${viewMode === 'loupe' ? 'active' : ''}`}
-          onClick={() => setViewMode('loupe')}
-          title="Loupe View (E)"
+          className={`btn btn-icon ${viewMode === 'gallery' ? 'active' : ''}`}
+          onClick={() => setViewMode('gallery')}
+          title="Gallery View (E)"
         >
-          <IconSquare size={18} />
+          <IconPhoto size={18} />
         </button>
         <button
           className={`btn btn-icon ${viewMode === 'compare' ? 'active' : ''}`}
@@ -69,7 +69,12 @@ export function Toolbar() {
         </button>
         <button
           className={`btn btn-icon ${viewMode === 'duplicates' ? 'active' : ''}`}
-          onClick={() => setViewMode('duplicates')}
+          onClick={() => {
+            if (viewMode !== 'duplicates') {
+              useFilterStore.getState().clearFilters()
+              setViewMode('duplicates')
+            }
+          }}
           title="Review Duplicates"
         >
           <IconCopy size={18} />
