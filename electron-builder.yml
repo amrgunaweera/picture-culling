@@ -5,13 +5,11 @@ directories:
   output: dist
 win:
   target:
-    - nsis
+    - msi
   icon: resources/icon.ico
-nsis:
+msi:
   oneClick: false
   perMachine: true
-  allowToChangeInstallationDirectory: true
-  deleteAppDataOnUninstall: false
   runAfterFinish: true
 asarUnpack:
   - "**/node_modules/sql.js/**/*"
