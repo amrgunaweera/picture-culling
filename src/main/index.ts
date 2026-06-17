@@ -14,7 +14,7 @@ function createWindow(): void {
     height: 900,
     minWidth: 1000,
     minHeight: 700,
-    title: 'Cullexa Picture Organizer',
+    title: 'Cullexa Picture Manager',
     backgroundColor: '#0f0f1a',
     show: false,
     frame: false,
@@ -33,7 +33,7 @@ function createWindow(): void {
     }
   }
 
-  const iconPath = path.join(__dirname, '../../resources/icon.jpg')
+  const iconPath = path.join(__dirname, '../../resources/icon.png')
   if (fs.existsSync(iconPath)) {
     options.icon = iconPath
   }
@@ -115,7 +115,7 @@ if (!gotTheLock) {
       console.error('Fatal startup error:', error)
       dialog.showErrorBox(
         'Startup Error',
-        `Cullexa Picture Organizer failed to start:\n\n${error instanceof Error ? error.stack : String(error)}`
+        `Cullexa Picture Manager failed to start:\n\n${error instanceof Error ? error.stack : String(error)}`
       )
       app.quit()
     }

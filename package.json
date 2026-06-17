@@ -1,5 +1,5 @@
 {
-  "name": "cullexa-picture-organizer",
+  "name": "cullexa-picture-manager",
   "version": "1.0.0",
   "description": "AI-powered photo culling tool for Windows",
   "main": "./out/main/index.js",
@@ -16,7 +16,7 @@
     "ai",
     "electron"
   ],
-  "author": "",
+  "author": "amrg-projects",
   "license": "ISC",
   "dependencies": {
     "@tensorflow-models/blazeface": "^0.1.0",

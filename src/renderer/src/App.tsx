@@ -59,7 +59,7 @@ export function App() {
       <div className="app-layout">
         <div className="app-titlebar">
           <img src={logoUrl} className="logo-icon" alt="Cullexa" />
-          <span className="app-titlebar-title">Cullexa Picture Organizer</span>
+          <span className="app-titlebar-title">Cullexa Picture Manager</span>
         </div>
         <ImportView />
         {isScanning && <ProgressOverlay type="scan" />}
@@ -71,7 +71,7 @@ export function App() {
     <div className="app-layout">
       <div className="app-titlebar">
         <img src={logoUrl} className="logo-icon" alt="Cullexa" />
-        <span className="app-titlebar-title">Cullexa Picture Organizer</span>
+        <span className="app-titlebar-title">Cullexa Picture Manager</span>
       </div>
       <Toolbar />
       {viewMode === 'grid' && <FilterBar />}

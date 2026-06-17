@@ -24,7 +24,7 @@ export function ImportView() {
         <div className="import-hero-icon" style={{ overflow: 'hidden' }}>
           <img src={logoUrl} alt="Cullexa" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         </div>
-        <h1>Welcome to Cullexa Picture Organizer</h1>
+        <h1>Welcome to Cullexa Picture Manager</h1>
         <p>
           AI-powered photo culling that analyzes sharpness, exposure, duplicates, and more —
           helping you find your best shots in seconds.

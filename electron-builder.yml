@@ -1,16 +1,23 @@
 appId: com.cullexa-picture-organizer.app
-productName: Cullexa Picture Organizer
+productName: Cullexa Picture Manager
 directories:
   buildResources: resources
   output: dist
 win:
   target:
     - msi
+    - appx
   icon: resources/icon.ico
 msi:
   oneClick: false
   perMachine: true
   runAfterFinish: true
+appx:
+  publisher: "CN=amrg-projects"
+  identityName: "f2a504a4-71f3-4eca-b2b2-732b4597829d"
+  displayName: "Cullexa Picture Manager"
+  publisherDisplayName: "amrg-projects"
+  applicationId: "CullexaPictureManager"
 asarUnpack:
   - "**/node_modules/sql.js/**/*"
   - "**/node_modules/sharp/**/*"

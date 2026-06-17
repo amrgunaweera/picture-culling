@@ -3,7 +3,7 @@ const path = require('path');
 const sharp = require('sharp');
 
 async function makeIco() {
-  const pngPath = path.join(__dirname, '../resources/icon.jpg');
+  const pngPath = path.join(__dirname, '../resources/icon.png');
   const icoPath = path.join(__dirname, '../resources/icon.ico');
 
   try {
