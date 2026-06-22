@@ -1,4 +1,4 @@
-import { ipcMain, dialog, BrowserWindow, shell } from 'electron'
+import { ipcMain, dialog, BrowserWindow, shell, app } from 'electron'
 import path from 'path'
 import fs from 'fs'
 import * as database from './database'
@@ -26,7 +26,7 @@ export function registerIpcHandlers(): void {
 
   ipcMain.handle('scan-folder', async (event, folderPath: string) => {
     const folderName = path.basename(folderPath)
-    
+
     let session = database.getSessions().find(s => s.folderPath === folderPath)
     if (!session) {
       session = database.createSession(folderPath, folderName)
@@ -293,5 +293,66 @@ export function registerIpcHandlers(): void {
   ipcMain.handle('get-file-url', (_event, filePath: string) => {
     // Return a file:// URL that the renderer can use in <img> tags
     return `file://${filePath.replace(/\\/g, '/')}`
+  })
+
+  // --- Feedback ---
+
+  ipcMain.handle('report-issue', async (event, id: number, issueType: string, customMessage?: string) => {
+    const win = BrowserWindow.fromWebContents(event.sender)
+    if (!win) return
+
+    try {
+      const reportsDir = path.join(app.getPath('userData'), 'reports')
+      if (!fs.existsSync(reportsDir)) {
+        fs.mkdirSync(reportsDir, { recursive: true })
+      }
+
+      const photo = database.getPhotoById(id)
+      const reportData = {
+        photoId: id,
+        fileName: photo?.fileName ?? 'Unknown',
+        filePath: photo?.filePath ?? 'Unknown',
+        aiScores: photo ? {
+          blurScore: photo.blurScore,
+          exposureScore: photo.exposureScore,
+          aestheticScore: photo.aestheticScore,
+          compositeScore: photo.compositeScore
+        } : null,
+        issueType,
+        customMessage: customMessage || undefined,
+        reportedAt: new Date().toISOString()
+      }
+
+      const reportPath = path.join(reportsDir, `report-${id}-${Date.now()}.json`)
+      fs.writeFileSync(reportPath, JSON.stringify(reportData, null, 2))
+
+      const email = 'boldstamina@gmail.com'
+      const subject = `AI Content Report: ${issueType}`
+      const body = `Please review the following AI-generated output:\n\n` +
+        `Issue Type: ${issueType}\n` +
+        (customMessage ? `Custom Message: ${customMessage}\n\n` : '') +
+        `Photo ID: ${id}\n` +
+        `File Name: ${photo?.fileName ?? 'Unknown'}\n` +
+        `File Path: ${photo?.filePath ?? 'Unknown'}\n\n` +
+        `AI Scores:\n${JSON.stringify(reportData.aiScores, null, 2)}\n\n` +
+        `Additional Details:\n`
+
+      const mailtoLink = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+      await shell.openExternal(mailtoLink)
+
+      await dialog.showMessageBox(win, {
+        type: 'info',
+        title: 'Report Prepared',
+        message: 'Your default email client will open to send this report.',
+        detail: `A local backup was also saved to: ${reportPath}`
+      })
+    } catch (err) {
+      console.error('Failed to prepare AI report:', err)
+      await dialog.showMessageBox(win, {
+        type: 'error',
+        title: 'Error',
+        message: 'Failed to prepare the report email. Please try again.'
+      })
+    }
   })
 }

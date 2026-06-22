@@ -26,6 +26,9 @@ const api: ElectronAPI = {
   exportPicked: (sessionId, targetDir) => ipcRenderer.invoke('export-picked', sessionId, targetDir),
   deleteRejected: (sessionId) => ipcRenderer.invoke('delete-rejected', sessionId),
 
+  // Feedback
+  reportIssue: (id, issueType, customMessage) => ipcRenderer.invoke('report-issue', id, issueType, customMessage),
+
   // Events
   onAnalysisProgress: (callback) => {
     const listener = (_event: any, progress: any) => callback(progress)

@@ -122,6 +122,9 @@ export interface ElectronAPI {
   exportPicked(sessionId: number, targetDir: string): Promise<number>
   deleteRejected(sessionId: number): Promise<number>
 
+  // Feedback
+  reportIssue(id: number, issueType: string, customMessage?: string): Promise<void>
+
   // Events
   onAnalysisProgress(callback: (progress: AnalysisProgress) => void): () => void
   onScanProgress(callback: (progress: ScanProgress) => void): () => void

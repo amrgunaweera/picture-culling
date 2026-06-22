@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { usePhotoStore, useUIStore } from '../store'
-import { IconPhoto, IconChevronLeft, IconChevronRight, IconCheck, IconX, IconStar, IconCamera, IconZoomIn, IconZoomOut } from '@tabler/icons-react'
+import { IconPhoto, IconChevronLeft, IconChevronRight, IconCheck, IconX, IconStar, IconCamera, IconZoomIn, IconZoomOut, IconAlertTriangle } from '@tabler/icons-react'
 
 function getScoreClass(score: number | null): string {
   if (score === null) return ''
@@ -22,6 +22,9 @@ export function PhotoViewer() {
   const [zoom, setZoom] = useState(1)
   const [pan, setPan] = useState({ x: 0, y: 0 })
   const [isPanning, setIsPanning] = useState(false)
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false)
+  const [reportIssueType, setReportIssueType] = useState('Inaccurate Rating')
+  const [reportCustomMessage, setReportCustomMessage] = useState('')
   const startPan = useRef({ x: 0, y: 0 })
   const imageRef = useRef<HTMLImageElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -164,6 +167,19 @@ export function PhotoViewer() {
             <div className={`rating-value-badge ${getScoreClass(photo.compositeScore)}`}>
               {formatScore(photo.compositeScore)}
             </div>
+            <button
+              className="btn btn-sm btn-ghost"
+              style={{ marginLeft: '12px', fontSize: 'var(--text-xs)' }}
+              onClick={(e) => {
+                e.stopPropagation()
+                setReportIssueType('Inaccurate Rating')
+                setReportCustomMessage('')
+                setIsReportModalOpen(true)
+              }}
+              title="Report an issue with this AI generated rating or flag inappropriate content"
+            >
+              <IconAlertTriangle size={14} style={{ marginRight: '4px' }} /> Report Issue
+            </button>
           </div>
         )}
 
@@ -373,6 +389,88 @@ export function PhotoViewer() {
           </div>
         ))}
       </div>
+
+      {isReportModalOpen && (
+        <div className="report-modal-overlay" onClick={() => setIsReportModalOpen(false)}>
+          <div className="report-modal-card" onClick={(e) => e.stopPropagation()}>
+            <div className="report-modal-header">
+              <span className="report-modal-title">
+                <IconAlertTriangle size={20} style={{ color: 'var(--color-warning)' }} />
+                Report AI Issue
+              </span>
+            </div>
+            <div className="report-modal-body">
+              <p className="report-modal-description">
+                What issue would you like to report regarding the AI analysis for this photo?
+              </p>
+              
+              <div className="report-form-group">
+                <label className="report-form-label">Issue Type</label>
+                <select
+                  className="select"
+                  value={reportIssueType}
+                  onChange={(e) => {
+                    const val = e.target.value
+                    setReportIssueType(val)
+                    if (val !== 'Other') {
+                      setReportCustomMessage('')
+                    }
+                  }}
+                >
+                  <option value="Inaccurate Rating">Inaccurate Rating</option>
+                  <option value="Inappropriate Content">Inappropriate Content</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+
+              {reportIssueType === 'Other' && (
+                <div className="report-form-group">
+                  <label className="report-form-label">Message (Max 250 characters)</label>
+                  <div className="report-textarea-container">
+                    <textarea
+                      className="report-textarea"
+                      placeholder="Please describe the issue..."
+                      value={reportCustomMessage}
+                      onChange={(e) => {
+                        const val = e.target.value
+                        if (val.length <= 250) {
+                          setReportCustomMessage(val)
+                        }
+                      }}
+                      maxLength={250}
+                    />
+                    <span className="report-char-count">
+                      {reportCustomMessage.length}/250
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+            <div className="report-modal-footer">
+              <button
+                className="btn btn-ghost"
+                onClick={() => setIsReportModalOpen(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="btn btn-primary"
+                onClick={async () => {
+                  if (!reportIssueType) return
+                  setIsReportModalOpen(false)
+                  try {
+                    await window.api.reportIssue(photo.id, reportIssueType, reportCustomMessage)
+                  } catch (err) {
+                    console.error('Failed to submit report:', err)
+                  }
+                }}
+              >
+                Submit Report
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
